@@ -24,7 +24,7 @@ Clone the taskfile.build repo.
 
 The Mint System Nextcloud share provides the secrets store.
 
-The default paths to the database file is are:
+The default paths to the database file are:
 
 ```bash
 KEEPASS_DATABASE_FILE="$HOME/cloud.mint-system.ch/Mint System/Data/Infrastruktur.kdbx"
