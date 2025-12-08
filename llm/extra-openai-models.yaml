@@ -1,0 +1,12 @@
+- model_id: qwen3
+  model_name: qwen3
+  api_base: https://api.infomaniak.com/1/ai/103281/openai
+  api_key_name: infomaniak
+- model_id: llama3
+  model_name: llama3
+  api_base: https://api.infomaniak.com/1/ai/103281/openai
+  api_key_name: infomaniak
+- model_id: Qwen/Qwen3-Coder-480B-A35B-Instruct
+  model_name: Qwen/Qwen3-Coder-480B-A35B-Instruct
+  api_base: https://api.infomaniak.com/1/ai/103281/openai
+  api_key_name: infomaniak

@@ -1,0 +1,200 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [[ -a ".env" ]]; then
+    source .env
+fi
+
+help-table() {
+    local cmd_width=24
+    local opt_width=10
+    local desc_width=60
+    local column="| %-${cmd_width}s | %-${opt_width}s | %-${desc_width}s |\n"
+
+    printf "$column" "Command" "Option" "Description"
+    echo "|$(printf '%*s' $((cmd_width + 2)) '' | tr ' ' '-')|$(printf '%*s' $((opt_width + 2)) '' | tr ' ' '-')|$(printf '%*s' $((desc_width + 2)) '' | tr ' ' '-')|"
+    printf "$column" 'clone-taskfile' '' 'Clone the taskfile.build repo.'
+    printf "$column" "install" "[name]" "Install a package."
+    printf "$column" "list" "[grep]" "List all available packages."
+    printf "$column" "run-open-webui" "" "Run Open WebUI."
+    printf "$column" "set-git-origin" "" "Change git origin to ssh."    
+    printf "$column" "setup-passwordless-sudo" "" "Get sudoers entry for passwordless sudo."
+    printf "$column" "setup-mint-system" "" "Clone Mint System git repos."
+}
+
+help() {
+    echo
+    if [[ -n "$1" ]]; then
+        help-table | grep -i "$1" | column -t -s'|'
+    else
+        echo "task <command> [options]"
+        echo
+        echo "commands:"
+        echo
+        help-table
+    fi
+    echo
+}
+
+# Updateable env vars
+
+KEEPASS_DATABASE_FILE=${KEEPASS_DATABASE_FILE:="$HOME/cloud.mint-system.ch/Mint System/Data/Infrastruktur.kdbx"}
+KEEPASS_DATABASE_KEY_FILE=${KEEPASS_DATABASE_KEY_FILE:="$HOME/cloud.mint-system.ch/Mint System/Secrets/KeePass.key"}
+
+# Conditional env vars
+
+if command -v pacman >/dev/null 2>&1; then
+    export PACKAGE_MANAGER="pacman"
+elif command -v apt >/dev/null 2>&1; then
+    export PACKAGE_MANAGER="apt"
+elif command -v dnf >/dev/null 2>&1; then
+    export PACKAGE_MANAGER="dnf"
+else
+    export PACKAGE_MANAGER="unknown"
+fi
+
+# Import commands
+
+clone-taskfile(){
+    if [[ ! -d "$HOME/taskfile.build" ]]; then
+        echo -e "\033[38;5;214mGit\033[0m: Clone taskfile repo"
+        git clone https://git.taskfile.build "$HOME/taskfile.build"
+    else
+        echo -e "\033[38;5;214mGit\033[0m: Pull taskfile repo"
+        git -C "$HOME/taskfile.build" pull
+    fi
+}
+
+if [[ -d "$HOME/taskfile.build/bin" ]]; then
+    for file in "$HOME/taskfile.build/bin/"*; do
+        if [[ -f "$file" ]]; then
+            source "$file"
+        fi
+    done
+fi
+
+# Env commands
+
+set-git-origin(){
+    echo "Change git origin."
+    git remote set-url origin git@github.com:Mint-System/Dotfiles.git
+}
+
+# Package commands
+
+list() {
+    list-table() {
+        local cmd_width=20
+        local opt_width=40
+        local column="| %-${cmd_width}s | %-${opt_width}s |\n"
+
+        printf "$column" "Name" "Description"
+        echo "|$(printf '%*s' $((cmd_width + 2)) '' | tr ' ' '-')|$(printf '%*s' $((opt_width + 2)) '' | tr ' ' '-')|"
+        printf "$column" "llm" "Install LLM cli."
+        printf "$column" "nextcloud" "Install Nextcloud Desktop."
+        printf "$column" "uv" "Install uv."
+    }
+
+    echo
+    if [[ -n "$1" ]]; then
+        list-table | grep -i "$1" | column -t -s'|'
+    else
+        list-table
+    fi
+    echo
+}
+
+install() {
+    if [[ -z "$1" ]]; then echo "\$1 is empty."; exit; fi
+    local command="install-$1"
+    $command
+}
+
+install-llm() {
+    echo "Install LLM."
+    uv tool install llm
+
+    echo "Create symlink to extra openapi models config."
+    create-symlink "$PWD/llm/extra-openai-models.yaml" "$(dirname $(llm logs path))/extra-openai-models.yaml"
+
+    echo "Set infomaniak api key."
+    llm keys set infomaniak --value "$(get-pass-from-keepass env/llm_key_infomaniak)"
+
+    echo "Set default model."
+    llm models default qwen3
+}
+
+install-nextcloud() {
+    echo "Install Nextcloud Desktop."
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        sudo add-apt-repository ppa:xtradeb/apps
+        sudo apt update && sudo apt install -y nextcloud-desktop
+    elif [[ "$PACKAGE_MANAGER" == "dnf" ]]; then
+        sudo dnf install -y nextcloud-client
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman  -S --noconfirm nextcloud-client
+    fi
+}
+
+install-uv() {
+    echo "Install uv."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+}
+
+# Run commands
+
+run-open-webui() {
+    echo "Open http://localhost:3000/ in your browser."
+    docker rm -f open-webui 2>/dev/null || true
+    docker run -d \
+        -p 3000:8080 \
+        -e ADMIN_EMAIL=login@janikvonrotz.ch \
+        -v open-webui:/app/backend/data \
+        --name open-webui \
+        --restart always \
+        ghcr.io/open-webui/open-webui:main
+}
+
+# Setup commands
+
+setup-mint-system() {
+    echo "Pull Mint-System repos."
+    [[ ! -d "$HOME/Main-Build" ]] && git clone git@github.com:Mint-System/Main-Build.git "$HOME/Main-Build"
+    [[ ! -d "$HOME/Jenkins-Build" ]] && git clone git@github.com:Mint-System/Jenkins-Build.git "$HOME/Jenkins-Build"
+    [[ ! -d "$HOME/Nextcloud-Build" ]] && git clone git@github.com:Mint-System/Nextcloud-Build.git "$HOME/Nextcloud-Build"
+    [[ ! -d "$HOME/Kubernetes-Build" ]] && git clone git@github.com:Mint-System/Kubernetes-Build.git "$HOME/Kubernetes-Build"
+    [[ ! -d "$HOME/Odoo-Build" ]] && git clone git@github.com:Mint-System/Odoo-Build.git "$HOME/Odoo-Build"
+    [[ ! -d "$HOME/Odoo-Build/vault" ]] && git clone git@gitlab.com:Mint-System/Odoo-Build-Vault.git "$HOME/Odoo-Build/vault"
+    [[ ! -d "$HOME/Ansible-Build" ]] && git clone git@github.com:Mint-System/Ansible-Build.git "$HOME/Ansible-Build"
+    [[ ! -d "$HOME/Ansible-Build/inventories" ]] && git clone git@gitlab.com:Mint-System/Ansible-Inventories.git "$HOME/Ansible-Build/inventories"
+    [[ ! -d "$HOME/Odoo-Wiki" ]] && git clone git@github.com:Mint-System/Odoo-Wiki.git "$HOME/Odoo-Wiki"
+    [[ ! -d "$HOME/Wiki" ]] && git clone git@github.com:Mint-System/Wiki.git "$HOME/Wiki"
+    [[ ! -d "$HOME/Website" ]] && git clone git@github.com:Mint-System/Website.git "$HOME/Website"
+    [[ ! -d "$HOME/VarLog" ]] && git clone git@github.com:Mint-System/VarLog.git "$HOME/VarLog"
+}
+
+if [[ "$1" == *","* ]]; then
+    # Split comma-separated commands
+    IFS=',' read -ra COMMANDS <<< "$1"
+    for cmd in "${COMMANDS[@]}"; do
+        # Trim whitespace
+        cmd=$(echo "$cmd" | xargs)
+        if declare -f "$cmd" > /dev/null; then
+            "$cmd"
+        else
+            echo "Unknown command: $cmd"
+            help
+            exit 1
+        fi
+    done
+elif declare -f "$1" > /dev/null; then
+    "$1" "${@:2}"
+else
+    case "$1" in
+        *)
+            echo "Unknown command: $1"
+            exit 1
+            ;;
+    esac
+fi
