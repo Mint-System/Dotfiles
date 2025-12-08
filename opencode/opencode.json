@@ -1,0 +1,24 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "infomaniak": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Infomaniak AI",
+      "options": {
+        "apiKey": "$INFOMANIAK_API_KEY",
+        "baseURL": "https://api.infomaniak.com/1/ai/103281/openai"
+      },
+      "models": {
+        "qwen-coder": {
+          "id": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+          "name": "Qwen3 Coder 480B",
+          "limit": {
+            "context": 5000,
+            "output": 5000
+          }
+        }
+      }
+    }
+  },
+  "model": "infomaniak/qwen-coder"
+}

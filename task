@@ -17,6 +17,8 @@ help-table() {
     printf "$column" 'clone-taskfile' '' 'Clone the taskfile.build repo.'
     printf "$column" "install" "[name]" "Install a package."
     printf "$column" "list" "[grep]" "List all available packages."
+    printf "$column" "opencode" "Install OpenCode cli."
+    printf "$column" "pnpm" "Install pnpm."
     printf "$column" "run-open-webui" "" "Run Open WebUI."
     printf "$column" "set-git-origin" "" "Change git origin to ssh."    
     printf "$column" "setup-passwordless-sudo" "" "Get sudoers entry for passwordless sudo."
@@ -121,6 +123,13 @@ install-llm() {
     echo "Set infomaniak api key."
     llm keys set infomaniak --value "$(get-pass-from-keepass env/llm_key_infomaniak)"
 
+    # List all infomaniak models:
+    # INFOMANIAK_API_KEY=""
+    # curl -G \
+    #  -H "Authorization: Bearer $INFOMANIAK_API_KEY" \
+    #  -H "Content-Type: application/json" \
+    # 'https://api.infomaniak.com/1/ai/models' | jq
+
     echo "Set default model."
     llm models default qwen3
 }
@@ -137,6 +146,24 @@ install-nextcloud() {
     fi
 }
 
+install-opencode() {
+    echo "Install OpenCode cli."
+    pnpm install -g opencode-ai
+
+    echo "Setup OpenCode config with api key: env/llm_key_infomaniak"
+    export INFOMANIAK_API_KEY=$(get-pass-from-keepass env/llm_key_infomaniak)
+    mkdir -p "$HOME/.config/opencode"
+    envsubst '$INFOMANIAK_API_KEY' < opencode/opencode.json > "$HOME/.config/opencode/opencode.json"
+}
+
+install-pnpm() {
+    echo "Install pnpm."
+    curl -fsSL https://get.pnpm.io/install.sh | sh -
+
+    log-warning "Run this command to install Node for your project:"
+    echo "pnpm env use --global lts"
+}
+
 install-uv() {
     echo "Install uv."
     curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -146,10 +173,11 @@ install-uv() {
 
 run-open-webui() {
     echo "Open http://localhost:3000/ in your browser."
+    echo "Admin email is set to '$(git config user.email)'."
     docker rm -f open-webui 2>/dev/null || true
     docker run -d \
         -p 3000:8080 \
-        -e ADMIN_EMAIL=login@janikvonrotz.ch \
+        -e ADMIN_EMAIL="$(git config user.email)" \
         -v open-webui:/app/backend/data \
         --name open-webui \
         --restart always \
