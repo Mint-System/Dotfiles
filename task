@@ -17,8 +17,6 @@ help-table() {
     printf "$column" 'clone-taskfile' '' 'Clone the taskfile.build repo.'
     printf "$column" "install" "[name]" "Install a package."
     printf "$column" "list" "[grep]" "List all available packages."
-    printf "$column" "opencode" "Install OpenCode cli."
-    printf "$column" "pnpm" "Install pnpm."
     printf "$column" "run-open-webui" "" "Run Open WebUI."
     printf "$column" "set-git-origin" "" "Change git origin to ssh."    
     printf "$column" "setup-passwordless-sudo" "" "Get sudoers entry for passwordless sudo."
@@ -96,6 +94,8 @@ list() {
         printf "$column" "llm" "Install LLM cli."
         printf "$column" "nextcloud" "Install Nextcloud Desktop."
         printf "$column" "uv" "Install uv."
+        printf "$column" "opencode" "Install OpenCode cli."
+        printf "$column" "pnpm" "Install pnpm."
     }
 
     echo
