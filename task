@@ -192,7 +192,7 @@ setup-mint-system() {
     [[ ! -d "$HOME/Jenkins-Build" ]] && git clone git@github.com:Mint-System/Jenkins-Build.git "$HOME/Jenkins-Build"
     [[ ! -d "$HOME/Nextcloud-Build" ]] && git clone git@github.com:Mint-System/Nextcloud-Build.git "$HOME/Nextcloud-Build"
     [[ ! -d "$HOME/Kubernetes-Build" ]] && git clone git@github.com:Mint-System/Kubernetes-Build.git "$HOME/Kubernetes-Build"
-    # [[ ! -d "$HOME/Kubernetes-Build/values" ]] && git clone git@gitlab.com:Mint-System/Kubernetes-Build-Values.git "$HOME/Kubernetes-Build/values"
+    [[ ! -d "$HOME/Kubernetes-Build/values" ]] && git clone git@gitlab.com:Mint-System/Helm-Values.git "$HOME/Kubernetes-Build/values"
     [[ ! -d "$HOME/Odoo-Build" ]] && git clone git@github.com:Mint-System/Odoo-Build.git "$HOME/Odoo-Build"
     [[ ! -d "$HOME/Odoo-Build/vault" ]] && git clone git@gitlab.com:Mint-System/Odoo-Build-Vault.git "$HOME/Odoo-Build/vault"
     [[ ! -d "$HOME/Ansible-Build" ]] && git clone git@github.com:Mint-System/Ansible-Build.git "$HOME/Ansible-Build"
