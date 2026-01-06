@@ -101,6 +101,7 @@ list() {
         printf "$column" "kubeseal" "Install kubeseal."
         printf "$column" "k9s" "Install k9s."
         printf "$column" "kind" "Install kind."
+        printf "$column" "keepass" "Install KeepassXC and keepassxc-cli."
     }
 
     echo
@@ -136,6 +137,18 @@ install-kubectl() {
     elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
         sudo pacman -S --noconfirm kubectl
         sudo pacman -S --noconfirm kubectx
+    fi
+}
+
+install-keepass() {
+    echo "Install KeepassXC."
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        sudo add-apt-repository ppa:phoerious/keepassxc
+        sudo apt update && sudo apt install -y keepassxc
+    elif [[ "$PACKAGE_MANAGER" == "dnf" ]]; then
+        sudo dnf install -y keepassxc
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman -S --noconfirm keepassxc
     fi
 }
 
