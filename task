@@ -96,6 +96,11 @@ list() {
         printf "$column" "uv" "Install uv."
         printf "$column" "opencode" "Install OpenCode cli."
         printf "$column" "pnpm" "Install pnpm."
+        printf "$column" "tools" "Install common tools."
+        printf "$column" "kubectl" "Install kubectl."
+        printf "$column" "kubeseal" "Install kubeseal."
+        printf "$column" "k9s" "Install k9s."
+        printf "$column" "kind" "Install kind."
     }
 
     echo
@@ -111,6 +116,59 @@ install() {
     if [[ -z "$1" ]]; then echo "\$1 is empty."; exit; fi
     local command="install-$1"
     $command
+}
+
+install-tools() {
+    echo "Install yq."
+    sudo wget https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 -O /usr/bin/yq &&\
+    sudo chmod +x /usr/bin/yq
+}
+
+install-kubectl() {
+    echo "Install kubectl."
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
+        curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+        sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list
+        sudo apt update && sudo apt install -y kubectl
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman -S --noconfirm kubectl
+        sudo pacman -S --noconfirm kubectx
+    fi
+}
+
+install-k9s() {
+    if [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman -S --noconfirm k9s
+    fi
+}
+
+install-kubeseal() {
+    # Fetch the latest sealed-secrets version using GitHub API
+    local kubeseal_version=$(curl -s https://api.github.com/repos/bitnami-labs/sealed-secrets/tags | jq -r '.[0].name' | cut -c 2-)
+
+    # Check if the version was fetched successfully
+    if [[ -z "$kubeseal_version" ]]; then
+        echo "Failed to fetch the latest kubeseal_version"
+        exit 1
+    fi
+
+    curl -OL "https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz"
+    tar -xvzf kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz kubeseal
+    sudo install -m 755 kubeseal /usr/local/bin/kubeseal
+    rm kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
+    rm kubeseal
+}
+
+install-kind() {
+    echo "Install kind."
+    # https://kind.sigs.k8s.io/docs/user/quick-start/#installation
+    [[ $(uname -m) = x86_64 ]] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
+    [[ $(uname -m) = aarch64 ]] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-arm64
+    chmod +x ./kind
+    sudo mv ./kind /usr/local/bin/kind
 }
 
 install-llm() {
