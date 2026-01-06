@@ -97,7 +97,7 @@ list() {
         printf "$column" "opencode" "Install OpenCode cli."
         printf "$column" "pnpm" "Install pnpm."
         printf "$column" "tools" "Install common tools."
-        printf "$column" "kubectl" "Install kubectl."
+        printf "$column" "kubectl" "Install kubectl and kubectx."
         printf "$column" "kubeseal" "Install kubeseal."
         printf "$column" "k9s" "Install k9s."
         printf "$column" "kind" "Install kind."
@@ -134,6 +134,7 @@ install-kubectl() {
         echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
         sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list
         sudo apt update && sudo apt install -y kubectl
+        sudo apt install kubectx
     elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
         sudo pacman -S --noconfirm kubectl
         sudo pacman -S --noconfirm kubectx
