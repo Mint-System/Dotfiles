@@ -94,6 +94,7 @@ list() {
         printf "$column" "llm" "Install LLM cli."
         printf "$column" "nextcloud" "Install Nextcloud Desktop."
         printf "$column" "uv" "Install uv."
+        printf "$column" "obsidian" "Install Obsidian."
         printf "$column" "opencode" "Install OpenCode cli."
         printf "$column" "pnpm" "Install pnpm."
         printf "$column" "tools" "Install common tools."
@@ -123,6 +124,20 @@ install-tools() {
     echo "Install yq."
     sudo wget https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 -O /usr/bin/yq &&\
     sudo chmod +x /usr/bin/yq
+}
+
+install-obsidian() {
+    echo "Install Obsidian."
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        # wcurl "https://github.com/obsidianmd/obsidian-releases/releases/download/v$RELEASE/obsidian_${RELEASE}_amd64.deb"
+        wcurl "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.8.9/obsidian_1.8.9_amd64.deb"
+        sudo apt install -y "./obsidian_1.8.9_amd64.deb"
+        rm "obsidian_1.8.9_amd64.deb"
+    elif [[ "$PACKAGE_MANAGER" == "dnf" ]]; then
+        sudo flatpak install -y md.obsidian.Obsidian
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman  -S --noconfirm obsidian
+    fi
 }
 
 install-kubectl() {
