@@ -274,20 +274,31 @@ run-open-webui() {
 # Setup commands
 
 setup-mint-system() {
-    echo "Pull Mint-System repos."
-    [[ ! -d "$HOME/Main-Build" ]] && git clone git@codeberg.org:Mint-System/Main.Build.git "$HOME/Main-Build"
+    echo "Enable git credentials store"
+    git config --global credential.helper store
+
+    echo "Update git origin."
+    [[ -d "$HOME/Ansible-Build/inventories" ]] && git -C "$HOME/Ansible-Build/inventories" remote set-url origin https://mint.app.codey.ch/mint-system/ansible-inventories
+    [[ -d "$HOME/Ansible-Build/inventories/opsone" ]] && git -C "$HOME/Ansible-Build/inventories/opsone" remote set-url origin https://mint.app.codey.ch/mint-system/ops-one-ansible-inventory
+    [[ -d "$HOME/Odoo-Build/vault" ]] && git -C "$HOME/Odoo-Build/vault" remote set-url origin https://mint.app.codey.ch/mint-system/odoo-build-vault
+    [[ -d "$HOME/Kubernetes-Build/values" ]] && git -C "$HOME/Kubernetes-Build/values" remote set-url origin https://mint.app.codey.ch/mint-system/helm-values
+
+    echo "Clone Mint-System repos."
+    
+    # [[ ! -d "$HOME/Main-Build" ]] && git clone git@codeberg.org:Mint-System/Main.Build.git "$HOME/Main-Build"
     [[ ! -d "$HOME/Jenkins-Build" ]] && git clone git@github.com:Mint-System/Jenkins-Build.git "$HOME/Jenkins-Build"
     [[ ! -d "$HOME/Nextcloud-Build" ]] && git clone git@github.com:Mint-System/Nextcloud-Build.git "$HOME/Nextcloud-Build"
     [[ ! -d "$HOME/Kubernetes-Build" ]] && git clone git@github.com:Mint-System/Kubernetes-Build.git "$HOME/Kubernetes-Build"
-    [[ ! -d "$HOME/Kubernetes-Build/values" ]] && git clone git@gitlab.com:Mint-System/Helm-Values.git "$HOME/Kubernetes-Build/values"
     [[ ! -d "$HOME/Odoo-Build" ]] && git clone git@github.com:Mint-System/Odoo-Build.git "$HOME/Odoo-Build"
-    [[ ! -d "$HOME/Odoo-Build/vault" ]] && git clone git@gitlab.com:Mint-System/Odoo-Build-Vault.git "$HOME/Odoo-Build/vault"
     [[ ! -d "$HOME/Ansible-Build" ]] && git clone git@github.com:Mint-System/Ansible-Build.git "$HOME/Ansible-Build"
-    [[ ! -d "$HOME/Ansible-Build/inventories" ]] && git clone git@gitlab.com:Mint-System/Ansible-Inventories.git "$HOME/Ansible-Build/inventories"
     [[ ! -d "$HOME/Odoo-Wiki" ]] && git clone git@github.com:Mint-System/Odoo-Wiki.git "$HOME/Odoo-Wiki"
     [[ ! -d "$HOME/Wiki" ]] && git clone git@github.com:Mint-System/Wiki.git "$HOME/Wiki"
     [[ ! -d "$HOME/Website" ]] && git clone git@github.com:Mint-System/Website.git "$HOME/Website"
     [[ ! -d "$HOME/VarLog" ]] && git clone git@github.com:Mint-System/VarLog.git "$HOME/VarLog"
+
+    [[ ! -d "$HOME/Odoo-Build/vault" ]] && git clone https://mint.app.codey.ch/mint-system/odoo-build-vault "$HOME/Odoo-Build/vault"
+    [[ ! -d "$HOME/Kubernetes-Build/values" ]] && git clone https://mint.app.codey.ch/mint-system/helm-values "$HOME/Kubernetes-Build/values"
+    [[ ! -d "$HOME/Ansible-Build/inventories" ]] && git clone https://mint.app.codey.ch/mint-system/ansible-inventories "$HOME/Ansible-Build/inventories"
 }
 
 if [[ "$1" == *","* ]]; then
