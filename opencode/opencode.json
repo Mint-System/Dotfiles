@@ -9,9 +9,9 @@
         "baseURL": "https://api.infomaniak.com/1/ai/103281/openai"
       },
       "models": {
-        "qwen-coder": {
-          "id": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
-          "name": "Qwen3 Coder 480B",
+        "qwen3": {
+          "id": "qwen3",
+          "name": "qwen3",
           "limit": {
             "context": 5000,
             "output": 5000
@@ -20,5 +20,5 @@
       }
     }
   },
-  "model": "infomaniak/qwen-coder"
+  "model": "infomaniak/qwen3"
 }
