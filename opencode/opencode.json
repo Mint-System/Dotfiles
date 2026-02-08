@@ -18,7 +18,25 @@
           }
         }
       }
+    },
+    "cortecs": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Cortecs AI",
+      "options": {
+        "apiKey": "$CORTECS_API_KEY",
+        "baseURL": "https://api.cortecs.ai/v1"
+      },
+      "models": {
+        "devstral-2512": {
+          "id": "devstral-2512",
+          "name": "devstral-2512",
+          "limit": {
+            "context": 8000,
+            "output": 4000
+          }
+        }
+      }
     }
   },
-  "model": "infomaniak/qwen3"
+  "model": "cortecs/devstral-2512"
 }

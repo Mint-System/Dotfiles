@@ -209,13 +209,6 @@ install-llm() {
     echo "Set infomaniak api key."
     llm keys set infomaniak --value "$(get-pass-from-keepass env/api_key_infomaniak)"
 
-    # List all infomaniak models:
-    # INFOMANIAK_API_KEY=""
-    # curl -G \
-    #  -H "Authorization: Bearer $INFOMANIAK_API_KEY" \
-    #  -H "Content-Type: application/json" \
-    # 'https://api.infomaniak.com/1/ai/models' | jq
-
     echo "Set default model."
     llm models default qwen3
 }
@@ -236,11 +229,12 @@ install-opencode() {
     echo "Install OpenCode cli."
     pnpm install -g opencode-ai
 
-    echo "Setup OpenCode config with api key: env/llm_key_infomaniak"
-    export INFOMANIAK_API_KEY=$(get-pass-from-keepass env/llm_key_infomaniak)
+    echo "Setup OpenCode config with api keys"
+    export INFOMANIAK_API_KEY=$(get-pass-from-keepass env/api_key_infomaniak)
+    export CORTECS_API_KEY=$(get-pass-from-keepass env/api_key_cortecs)
     mkdir -p "$HOME/.config/opencode"
     echo "Setup OpenCode config file: "$HOME/.config/opencode/opencode.json""
-    envsubst '$INFOMANIAK_API_KEY' < opencode/opencode.json > "$HOME/.config/opencode/opencode.json"
+    envsubst '$INFOMANIAK_API_KEY $CORTECS_API_KEY' < opencode/opencode.json > "$HOME/.config/opencode/opencode.json"
 }
 
 install-pnpm() {
