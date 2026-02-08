@@ -229,12 +229,12 @@ install-opencode() {
     echo "Install OpenCode cli."
     pnpm install -g opencode-ai
 
-    echo "Setup OpenCode config with api keys"
-    export INFOMANIAK_API_KEY=$(get-pass-from-keepass env/api_key_infomaniak)
-    export CORTECS_API_KEY=$(get-pass-from-keepass env/api_key_cortecs)
-    mkdir -p "$HOME/.config/opencode"
-    echo "Setup OpenCode config file: "$HOME/.config/opencode/opencode.json""
-    envsubst '$INFOMANIAK_API_KEY $CORTECS_API_KEY' < opencode/opencode.json > "$HOME/.config/opencode/opencode.json"
+    # echo "Setup OpenCode config with api keys"
+    # export INFOMANIAK_API_KEY=$(get-pass-from-keepass env/api_key_infomaniak)
+    # export CORTECS_API_KEY=$(get-pass-from-keepass env/api_key_cortecs)
+    # mkdir -p "$HOME/.config/opencode"
+    # echo "Setup OpenCode config file: "$HOME/.config/opencode/opencode.json""
+    # envsubst '$INFOMANIAK_API_KEY $CORTECS_API_KEY' < opencode/opencode.json > "$HOME/.config/opencode/opencode.json"
 }
 
 install-pnpm() {
