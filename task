@@ -17,7 +17,6 @@ help-table() {
     printf "$column" 'clone-taskfile' '' 'Clone the taskfile.build repo.'
     printf "$column" "install" "[name]" "Install a package."
     printf "$column" "list" "[grep]" "List all available packages."
-    printf "$column" "run-open-webui" "" "Run Open WebUI."
     printf "$column" "set-git-origin" "" "Change git origin to ssh."    
     printf "$column" "setup-passwordless-sudo" "" "Get sudoers entry for passwordless sudo."
     printf "$column" "setup-mint-system" "" "Clone Mint System git repos."
@@ -208,7 +207,7 @@ install-llm() {
     create-symlink "$PWD/llm/extra-openai-models.yaml" "$(dirname $(llm logs path))/extra-openai-models.yaml"
 
     echo "Set infomaniak api key."
-    llm keys set infomaniak --value "$(get-pass-from-keepass env/llm_key_infomaniak)"
+    llm keys set infomaniak --value "$(get-pass-from-keepass env/api_key_infomaniak)"
 
     # List all infomaniak models:
     # INFOMANIAK_API_KEY=""
@@ -255,21 +254,6 @@ install-pnpm() {
 install-uv() {
     echo "Install uv."
     curl -LsSf https://astral.sh/uv/install.sh | sh
-}
-
-# Run commands
-
-run-open-webui() {
-    echo "Open http://localhost:3000/ in your browser."
-    echo "Admin email is set to '$(git config user.email)'."
-    docker rm -f open-webui 2>/dev/null || true
-    docker run -d \
-        -p 3000:8080 \
-        -e ADMIN_EMAIL="$(git config user.email)" \
-        -v open-webui:/app/backend/data \
-        --name open-webui \
-        --restart always \
-        ghcr.io/open-webui/open-webui:main
 }
 
 # Setup commands
