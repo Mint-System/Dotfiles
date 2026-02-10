@@ -2,3 +2,7 @@
   model_name: qwen3
   api_base: https://api.infomaniak.com/1/ai/103281/openai
   api_key_name: infomaniak
+- model_id: cortecs
+  model_name: cortecs
+  api_base: https://api.cortecs.ai/v1/
+  api_key_name: cortecs

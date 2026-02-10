@@ -207,7 +207,10 @@ install-llm() {
     create-symlink "$PWD/llm/extra-openai-models.yaml" "$(dirname $(llm logs path))/extra-openai-models.yaml"
 
     echo "Set infomaniak api key."
-    llm keys set infomaniak --value "$(get-pass-from-keepass env/api_key_infomaniak)"
+    llm keys set infomaniak --value "$(get-pass-from-keepass dotenv/api_key_infomaniak)"
+
+    echo "Set cortecs api key."
+    llm keys set cortecs --value "$(get-pass-from-keepass dotenv/api_key_cortecs)"
 
     echo "Set default model."
     llm models default qwen3
