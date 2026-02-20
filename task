@@ -141,16 +141,14 @@ install-obsidian() {
 
 install-kubectl() {
     echo "Install kubectl."
+    curl -LO "https://dl.k8s.io/release/v1.34.0/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    sudo mv kubectl /usr/local/bin/kubectl
+
+    echo "Install kubectx."
     if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-        # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
-        curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-        sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-        echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-        sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list
-        sudo apt update && sudo apt install -y kubectl
         sudo apt install kubectx
     elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
-        sudo pacman -S --noconfirm kubectl
         sudo pacman -S --noconfirm kubectx
     fi
 }
