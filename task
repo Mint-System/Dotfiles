@@ -231,6 +231,12 @@ install-nextcloud() {
 install-opencode() {
     echo "Install OpenCode cli."
     pnpm install -g opencode-ai
+
+    echo "Setup opencode config."
+    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/api_key_infomaniak)
+    mkdir -p "$HOME/.config/opencode"
+    envsubst '${INFOMANIAK_API_KEY}' < "./opencode/config.json" > "$HOME/.config/opencode/opencode.json"
+    echo "File '$HOME/.config/opencode/opencode.json' written."
 }
 
 install-pnpm() {
