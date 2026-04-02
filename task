@@ -102,6 +102,7 @@ list() {
         printf "$column" "k9s" "Install k9s."
         printf "$column" "kind" "Install kind."
         printf "$column" "keepass" "Install KeepassXC and keepassxc-cli."
+        printf "$column" "postgresql-client" "Install Postgers client tools."
     }
 
     echo
@@ -164,6 +165,13 @@ install-keepass() {
         sudo dnf install -y keepassxc
     elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
         sudo pacman -S --noconfirm keepassxc
+    fi
+}
+
+install-postgresql-client() {
+    echo "Install Postgres client tools 16."
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        sudo postgresql-client-16
     fi
 }
 
