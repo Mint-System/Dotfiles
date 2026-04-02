@@ -154,6 +154,9 @@ install-kubectl() {
     curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
     tar zxvf "${KREW}.tar.gz" &&
     ./"${KREW}" install krew
+
+    echo "Install kubectx and kubectx-ns."
+    kubectl krew install ctx && kubectl krew install ns
 }
 
 install-keepass() {
@@ -196,6 +199,8 @@ install-kubeseal() {
     sudo install -m 755 kubeseal /usr/local/bin/kubeseal
     rm kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
     rm kubeseal
+
+
 }
 
 install-kind() {
