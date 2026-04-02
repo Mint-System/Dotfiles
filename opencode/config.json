@@ -5,7 +5,7 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "Infomaniak AI",
       "options": {
-        "baseURL": "https://api.infomaniak.com/2/ai/103281/openai/v1",
+        "baseURL": "https://api.infomaniak.com/2/ai/105852/openai/v1",
         "apiKey": "${INFOMANIAK_API_KEY}"
       },
       "models": {
