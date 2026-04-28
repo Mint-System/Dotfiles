@@ -1,6 +1,10 @@
-- model_id: qwen3
+- model_id: Qwen/Qwen3.5-122B-A10B-FP8
   model_name: qwen3
-  api_base: https://api.infomaniak.com/1/ai/105852/openai
+  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
+  api_key_name: infomaniak
+- model_id: moonshotai/Kimi-K2.6
+  model_name: Kimi
+  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
   api_key_name: infomaniak
 - model_id: cortecs
   model_name: cortecs
