@@ -243,9 +243,7 @@ install-nextcloud() {
 
 install-opencode() {
     echo "Install OpenCode cli."
-    pnpm remove -g opencode-ai
-    pnpm install -g opencode-ai --config.ignore-scripts=false
-    pnpm approve-builds -g
+    curl -fsSL https://opencode.ai/install | bash
 
     echo "Setup opencode config."
     export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)
