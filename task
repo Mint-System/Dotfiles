@@ -17,6 +17,7 @@ help-table() {
     printf "$column" 'clone-taskfile' '' 'Clone the taskfile.build repo.'
     printf "$column" "install" "[name]" "Install a package."
     printf "$column" "list" "[grep]" "List all available packages."
+    printf "$column" "list-infomaniak-models" "" "List all available Infomaniak ai models."
     printf "$column" "set-git-origin" "" "Change git origin to ssh."    
     printf "$column" "setup-passwordless-sudo" "" "Get sudoers entry for passwordless sudo."
     printf "$column" "setup-mint-system" "" "Clone Mint System git repos."
@@ -73,14 +74,19 @@ if [[ -d "$HOME/taskfile.build/bin" ]]; then
     done
 fi
 
-# Env commands
-
 set-git-origin(){
     echo "Change git origin."
     git remote set-url origin git@github.com:Mint-System/Dotfiles.git
 }
 
-# Package commands
+list-infomaniak-models() {
+    PRODUCT_ID=105852
+    INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)
+    curl -G \
+         -H "Authorization: Bearer $INFOMANIAK_API_KEY" \
+         -H "Content-Type: application/json" \
+        "https://api.infomaniak.com/2/ai/$PRODUCT_ID/openai/v1/models" | jq '.data[].id'
+}
 
 list() {
     list-table() {
@@ -199,8 +205,6 @@ install-kubeseal() {
     sudo install -m 755 kubeseal /usr/local/bin/kubeseal
     rm kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
     rm kubeseal
-
-
 }
 
 install-kind() {
@@ -269,8 +273,6 @@ install-uv() {
     echo "Install uv."
     curl -LsSf https://astral.sh/uv/install.sh | sh
 }
-
-# Setup commands
 
 setup-mint-system() {
     echo "Enable git credentials store."
