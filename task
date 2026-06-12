@@ -227,7 +227,7 @@ install-llm() {
     llm keys set infomaniak --value "$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)"
 
     echo "Set default model."
-    llm models default moonshotai/Kimi-K2.6
+    llm models default nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
 }
 
 install-nextcloud() {
