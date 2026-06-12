@@ -1,12 +1,16 @@
 - model_id: Qwen/Qwen3.5-122B-A10B-FP8
-  model_name: qwen3
+  model_name: Qwen/Qwen3.5-122B-A10B-FP8
   api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
   api_key_name: infomaniak
 - model_id: moonshotai/Kimi-K2.6
-  model_name: Kimi
+  model_name: moonshotai/Kimi-K2.6
   api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
   api_key_name: infomaniak
-- model_id: cortecs
-  model_name: cortecs
-  api_base: https://api.cortecs.ai/v1/
-  api_key_name: cortecs
+- model_id: mistralai/Ministral-3-14B-Instruct-2512
+  model_name: mistralai/Ministral-3-14B-Instruct-2512
+  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
+  api_key_name: infomaniak
+- model_id: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+  model_name: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
+  api_key_name: infomaniak
