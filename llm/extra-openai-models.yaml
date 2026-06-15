@@ -14,3 +14,7 @@
   model_name: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
   api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
   api_key_name: infomaniak
+- model_id: Qwen/Qwen3-Embedding-8B
+  model_name: qwen3
+  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
+  api_key_name: infomaniak
