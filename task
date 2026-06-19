@@ -99,6 +99,7 @@ list() {
         printf "$column" "llm" "Install LLM cli."
         printf "$column" "nextcloud" "Install Nextcloud Desktop."
         printf "$column" "uv" "Install uv."
+        printf "$column" "helm" "Install Helm."
         printf "$column" "obsidian" "Install Obsidian."
         printf "$column" "opencode" "Install OpenCode cli."
         printf "$column" "pnpm" "Install pnpm."
@@ -163,6 +164,24 @@ install-kubectl() {
 
     echo "Install kubectx and kubectx-ns."
     kubectl krew install ctx && kubectl krew install ns
+}
+
+install-helm() {
+    echo  "Install Helm."
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+        sudo apt install apt-transport-https --yes
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+        sudo apt update
+        sudo apt install -y  helm
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman -S --noconfirm helm
+    fi
+
+    echo "Install Helm Secrets Plugin." 
+    helm plugin install oci://ghcr.io/jkroepke/helm-secrets/secrets:4.7.4 --verify=false
+    helm plugin install oci://ghcr.io/jkroepke/helm-secrets/secrets-getter:4.7.4 --verify=false
+    helm plugin install oci://ghcr.io/jkroepke/helm-secrets/secrets-post-renderer:4.7.4 --verify=false
 }
 
 install-keepass() {
