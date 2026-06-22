@@ -296,6 +296,7 @@ setup-mint-system() {
 
     echo "Update git origin."
 
+    # GitHub
     [[ -d "$HOME/Jenkins-Build" ]] && git -C "$HOME/Jenkins-Build" remote set-url origin git@github.com:Mint-System/Jenkins-Build.git
     [[ -d "$HOME/Nextcloud-Build" ]] && git -C "$HOME/Nextcloud-Build" remote set-url origin git@github.com:Mint-System/Nextcloud-Build.git
     [[ -d "$HOME/Kubernetes-Build" ]] && git -C "$HOME/Kubernetes-Build" remote set-url origin git@github.com:Mint-System/Kubernetes-Build.git
@@ -306,6 +307,10 @@ setup-mint-system() {
     [[ -d "$HOME/Website" ]] && git -C "$HOME/Website" remote set-url origin git@github.com:Mint-System/Website.git
     [[ -d "$HOME/VarLog" ]] && git -C "$HOME/VarLog" remote set-url origin git@github.com:Mint-System/VarLog.git
 
+    # Codeberg
+    [[ -d "$HOME/taskfile.build" ]] && git -C "$HOME/taskfile.build" remote set-url origin git@codeberg.org:Mint-System/taskfile.build.git
+
+    # Codey
     [[ -d "$HOME/Ansible-Build/inventories" ]] && git -C "$HOME/Ansible-Build/inventories" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ansible-inventories.git
     [[ -d "$HOME/Ansible-Build/inventories/opsone" ]] && git -C "$HOME/Ansible-Build/inventories/opsone" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ops-one-ansible-inventory.git
     [[ -d "$HOME/Odoo-Build/vault" ]] && git -C "$HOME/Odoo-Build/vault" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/odoo-build-vault.git
@@ -313,6 +318,7 @@ setup-mint-system() {
 
     echo "Clone Mint-System repos."
 
+    # GitHub
     [[ ! -d "$HOME/Jenkins-Build" ]] && git clone git@github.com:Mint-System/Jenkins-Build.git "$HOME/Jenkins-Build"
     [[ ! -d "$HOME/Nextcloud-Build" ]] && git clone git@github.com:Mint-System/Nextcloud-Build.git "$HOME/Nextcloud-Build"
     [[ ! -d "$HOME/Kubernetes-Build" ]] && git clone git@github.com:Mint-System/Kubernetes-Build.git "$HOME/Kubernetes-Build"
@@ -323,6 +329,7 @@ setup-mint-system() {
     [[ ! -d "$HOME/Website" ]] && git clone git@github.com:Mint-System/Website.git "$HOME/Website"
     [[ ! -d "$HOME/VarLog" ]] && git clone git@github.com:Mint-System/VarLog.git "$HOME/VarLog"
 
+    # Codey
     [[ ! -d "$HOME/Odoo-Build/vault" ]] && git clone ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/odoo-build-vault.git "$HOME/Odoo-Build/vault"
     [[ ! -d "$HOME/Kubernetes-Build/values" ]] && git clone ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/helm-values.git "$HOME/Kubernetes-Build/values"
     [[ ! -d "$HOME/Ansible-Build/inventories" ]] && git clone ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ansible-inventories.git "$HOME/Ansible-Build/inventories"
