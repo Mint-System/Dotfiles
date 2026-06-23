@@ -1,3 +1,7 @@
+---
+title: Add Cortects to LLM models
+---
+
 Read the AGENTS.md and README.md to get understanding of the project.
 
 Update the `install-llm` command so it adds the models for https://api.cortecs.ai/v1/. The secret `dotenv/api_key_cortecs` already exists in keepass.
