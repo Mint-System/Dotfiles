@@ -353,6 +353,9 @@ install-npm() {
     if [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
         sudo pacman -S --noconfirm nodejs-lts-krypton
     fi
+    if [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman -S --noconfirm npm
+    fi
 }
 
 install-uv() {
