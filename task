@@ -7,20 +7,43 @@ if [[ -a ".env" ]]; then
 fi
 
 help-table() {
-    local cmd_width=24
-    local opt_width=10
-    local desc_width=60
-    local column="| %-${cmd_width}s | %-${opt_width}s | %-${desc_width}s |\n"
+    local -a rows
+    local max_cmd=7 max_opt=6 max_desc=11
 
-    printf "$column" "Command" "Option" "Description"
-    echo "|$(printf '%*s' $((cmd_width + 2)) '' | tr ' ' '-')|$(printf '%*s' $((opt_width + 2)) '' | tr ' ' '-')|$(printf '%*s' $((desc_width + 2)) '' | tr ' ' '-')|"
-    printf "$column" 'clone-taskfile' '' 'Clone the taskfile.build repo.'
-    printf "$column" "install" "[name]" "Install a package."
-    printf "$column" "list" "[grep]" "List all available packages."
-    printf "$column" "list-infomaniak-models" "" "List all available Infomaniak ai models."
-    printf "$column" "set-git-origin" "" "Change git origin to ssh."    
-    printf "$column" "setup-passwordless-sudo" "" "Get sudoers entry for passwordless sudo."
-    printf "$column" "setup-mint-system" "" "Clone Mint System git repos."
+    rows+=("Command|Option|Description")
+    rows+=("clone-taskfile||Clone the taskfile.build repo")
+    rows+=("install|[name]|Install a package.")
+    rows+=("uninstall|[name]|Uninstall a package.")
+    rows+=("list|[grep]|List all available packages")
+    rows+=("list-infomaniak-models||List all available Infomaniak ai models")
+    rows+=("set-git-origin||Change git origin to ssh")
+    rows+=("setup-passwordless-sudo||Get sudoers entry for passwordless sudo")
+    rows+=("setup-mint-system||Clone Mint System git repos")
+
+    for row in "${rows[@]}"; do
+        IFS='|' read -r cmd opt desc <<< "$row"
+        (( ${#cmd} > max_cmd )) && max_cmd=${#cmd}
+        (( ${#opt} > max_opt )) && max_opt=${#opt}
+        (( ${#desc} > max_desc )) && max_desc=${#desc}
+    done
+
+    printf '| %-*s | %-*s | %-*s |\n' \
+        "$max_cmd" "Command" \
+        "$max_opt" "Option" \
+        "$max_desc" "Description"
+
+    printf '|-%*s-|-%*s-|-%*s-|\n' \
+        "$max_cmd" "$(printf '%*s' "$max_cmd" '' | tr ' ' '-')" \
+        "$max_opt" "$(printf '%*s' "$max_opt" '' | tr ' ' '-')" \
+        "$max_desc" "$(printf '%*s' "$max_desc" '' | tr ' ' '-')"
+
+    for row in "${rows[@]:1}"; do
+        IFS='|' read -r cmd opt desc <<< "$row"
+        printf '| %-*s | %-*s | %-*s |\n' \
+            "$max_cmd" "$cmd" \
+            "$max_opt" "$opt" \
+            "$max_desc" "$desc"
+    done
 }
 
 help() {
@@ -75,7 +98,7 @@ if [[ -d "$HOME/taskfile.build/bin" ]]; then
 fi
 
 set-git-origin(){
-    echo "Change git origin."
+    echo "Change git origin"
     git remote set-url origin git@github.com:Mint-System/Dotfiles.git
 }
 
@@ -90,26 +113,46 @@ list-infomaniak-models() {
 
 list() {
     list-table() {
-        local cmd_width=20
-        local opt_width=40
-        local column="| %-${cmd_width}s | %-${opt_width}s |\n"
+        local -a rows
+        local max_cmd=4 max_opt=11
 
-        printf "$column" "Name" "Description"
-        echo "|$(printf '%*s' $((cmd_width + 2)) '' | tr ' ' '-')|$(printf '%*s' $((opt_width + 2)) '' | tr ' ' '-')|"
-        printf "$column" "llm" "Install LLM cli."
-        printf "$column" "nextcloud" "Install Nextcloud Desktop."
-        printf "$column" "uv" "Install uv."
-        printf "$column" "helm" "Install Helm."
-        printf "$column" "obsidian" "Install Obsidian."
-        printf "$column" "opencode" "Install OpenCode cli."
-        printf "$column" "pnpm" "Install pnpm."
-        printf "$column" "tools" "Install common tools."
-        printf "$column" "kubectl" "Install kubectl and kubectx."
-        printf "$column" "kubeseal" "Install kubeseal."
-        printf "$column" "k9s" "Install k9s."
-        printf "$column" "kind" "Install kind."
-        printf "$column" "keepass" "Install KeepassXC and keepassxc-cli."
-        printf "$column" "postgresql-client" "Install Postgers client tools."
+        rows+=("Name|Description")
+        rows+=("llm|Install LLM cli")
+        rows+=("nextcloud|Install Nextcloud Desktop")
+        rows+=("uv|Install uv")
+        rows+=("helm|Install Helm")
+        rows+=("obsidian|Install Obsidian")
+        rows+=("opencode|Install OpenCode cli")
+        rows+=("pnpm|Install pnpm")
+        rows+=("npm|Install npm")
+        rows+=("tools|Install common tools")
+        rows+=("kubectl|Install kubectl and kubectx")
+        rows+=("kubeseal|Install kubeseal")
+        rows+=("k9s|Install k9s")
+        rows+=("kind|Install kind")
+        rows+=("keepass|Install KeepassXC and keepassxc-cli")
+        rows+=("postgresql-client|Install Postgers client tools")
+
+        for row in "${rows[@]}"; do
+            IFS='|' read -r name desc <<< "$row"
+            (( ${#name} > max_cmd )) && max_cmd=${#name}
+            (( ${#desc} > max_opt )) && max_opt=${#desc}
+        done
+
+        printf '| %-*s | %-*s |\n' \
+            "$max_cmd" "Name" \
+            "$max_opt" "Description"
+
+        printf '|-%*s-|-%*s-|\n' \
+            "$max_cmd" "$(printf '%*s' "$max_cmd" '' | tr ' ' '-')" \
+            "$max_opt" "$(printf '%*s' "$max_opt" '' | tr ' ' '-')"
+
+        for row in "${rows[@]:1}"; do
+            IFS='|' read -r name desc <<< "$row"
+            printf '| %-*s | %-*s |\n' \
+                "$max_cmd" "$name" \
+                "$max_opt" "$desc"
+        done
     }
 
     echo
@@ -127,14 +170,20 @@ install() {
     $command
 }
 
+uninstall() {
+    if [[ -z "$1" ]]; then echo "\$1 is empty."; exit; fi
+    local command="uninstall-$1"
+    $command
+}
+
 install-tools() {
-    echo "Install yq."
+    echo "Install yq"
     sudo wget https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 -O /usr/bin/yq &&\
     sudo chmod +x /usr/bin/yq
 }
 
 install-obsidian() {
-    echo "Install Obsidian."
+    echo "Install Obsidian"
     if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
         # wcurl "https://github.com/obsidianmd/obsidian-releases/releases/download/v$RELEASE/obsidian_${RELEASE}_amd64.deb"
         wcurl "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.8.9/obsidian_1.8.9_amd64.deb"
@@ -148,12 +197,12 @@ install-obsidian() {
 }
 
 install-kubectl() {
-    echo "Install kubectl."
+    echo "Install kubectl"
     curl -LO "https://dl.k8s.io/release/v1.34.0/bin/linux/amd64/kubectl"
     chmod +x kubectl
     sudo mv kubectl /usr/local/bin/kubectl
 
-    echo "Install krew."
+    echo "Install krew"
     set -x; cd "$(mktemp -d)" &&
     OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
     ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
@@ -162,12 +211,12 @@ install-kubectl() {
     tar zxvf "${KREW}.tar.gz" &&
     ./"${KREW}" install krew
 
-    echo "Install kubectx and kubectx-ns."
+    echo "Install kubectx and kubectx-ns"
     kubectl krew install ctx && kubectl krew install ns
 }
 
 install-helm() {
-    echo  "Install Helm."
+    echo  "Install Helm"
     if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
         curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
         sudo apt install apt-transport-https --yes
@@ -185,7 +234,7 @@ install-helm() {
 }
 
 install-keepass() {
-    echo "Install KeepassXC."
+    echo "Install KeepassXC"
     if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
         sudo add-apt-repository ppa:phoerious/keepassxc
         sudo apt update && sudo apt install -y keepassxc
@@ -197,7 +246,7 @@ install-keepass() {
 }
 
 install-postgresql-client() {
-    echo "Install Postgres client tools 16."
+    echo "Install Postgres client tools 16"
     if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
         sudo postgresql-client-16
     fi
@@ -227,7 +276,7 @@ install-kubeseal() {
 }
 
 install-kind() {
-    echo "Install kind."
+    echo "Install kind"
     # https://kind.sigs.k8s.io/docs/user/quick-start/#installation
     [[ $(uname -m) = x86_64 ]] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
     [[ $(uname -m) = aarch64 ]] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-arm64
@@ -236,21 +285,21 @@ install-kind() {
 }
 
 install-llm() {
-    echo "Install LLM."
+    echo "Install LLM"
     uv tool install llm
 
-    echo "Create symlink to extra openapi models config."
+    echo "Create symlink to extra openapi models config"
     create-symlink "$PWD/llm/extra-openai-models.yaml" "$(dirname $(llm logs path))/extra-openai-models.yaml"
 
-    echo "Set infomaniak api key."
+    echo "Set infomaniak api key"
     llm keys set infomaniak --value "$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)"
 
-    echo "Set default model."
+    echo "Set default model"
     llm models default qwen3
 }
 
 install-nextcloud() {
-    echo "Install Nextcloud Desktop."
+    echo "Install Nextcloud Desktop"
     if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
         sudo add-apt-repository ppa:xtradeb/apps
         sudo apt update && sudo apt install -y nextcloud-desktop
@@ -262,39 +311,60 @@ install-nextcloud() {
 }
 
 install-opencode() {
-    echo "Install OpenCode cli."
+    echo "Install OpenCode cli"
     curl -fsSL https://opencode.ai/install | bash
 
-    echo "Setup opencode config."
+    echo "Setup opencode config"
     export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)
     mkdir -p "$HOME/.config/opencode"
     envsubst '${INFOMANIAK_API_KEY}' < "./opencode/config.json" > "$HOME/.config/opencode/opencode.json"
-    echo "File '$HOME/.config/opencode/opencode.json' written."
+    echo "File '$HOME/.config/opencode/opencode.json' written"
 }
 
 install-pi() {
-    echo "install pi cli."
+    echo "install pi cli"
     curl -fsSL https://pi.dev/install.sh | sh
 }
 
 install-pnpm() {
-    echo "Install pnpm."
+    echo "Install pnpm"
     curl -fsSL https://get.pnpm.io/install.sh | sh -
 
     log-warning "Run this command to install Node for your project:"
     echo "pnpm env use --global lts"
 }
 
+uninstall-pnpm() {
+    echo "Uninstall pnpm"
+    
+    echo "This will delete: $PNPM_HOME"
+    read -p "Are you sure? (y/N) " confirm
+    
+    if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+        rm -rf "$PNPM_HOME"
+        echo "pnpm uninstalled successfully"
+    else
+        echo "Aborted"
+    fi
+}
+
+install-npm() {
+    echo "Install Node.js"
+    if [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman -S --noconfirm nodejs-lts-krypton
+    fi
+}
+
 install-uv() {
-    echo "Install uv."
+    echo "Install uv"
     curl -LsSf https://astral.sh/uv/install.sh | sh
 }
 
 setup-mint-system() {
-    echo "Enable git credentials store."
+    echo "Enable git credentials store"
     git config --global credential.helper store
 
-    echo "Update git origin."
+    echo "Update git origin"
 
     # GitHub
     [[ -d "$HOME/Jenkins-Build" ]] && git -C "$HOME/Jenkins-Build" remote set-url origin git@github.com:Mint-System/Jenkins-Build.git
@@ -316,7 +386,7 @@ setup-mint-system() {
     [[ -d "$HOME/Odoo-Build/vault" ]] && git -C "$HOME/Odoo-Build/vault" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/odoo-build-vault.git
     [[ -d "$HOME/Kubernetes-Build/values" ]] && git -C "$HOME/Kubernetes-Build/values" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/helm-values.git
 
-    echo "Clone Mint-System repos."
+    echo "Clone Mint-System repos"
 
     # GitHub
     [[ ! -d "$HOME/Jenkins-Build" ]] && git clone git@github.com:Mint-System/Jenkins-Build.git "$HOME/Jenkins-Build"
