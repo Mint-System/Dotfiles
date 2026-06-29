@@ -295,7 +295,7 @@ install-llm() {
     llm keys set infomaniak --value "$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)"
 
     echo "Set default model"
-    llm models default qwen3
+    llm models default Qwen/Qwen3-Embedding-8B
 }
 
 install-nextcloud() {
