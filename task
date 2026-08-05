@@ -386,7 +386,6 @@ setup-mint-system() {
     # Codey
     [[ -d "$HOME/Ansible-Build/inventories" ]] && git -C "$HOME/Ansible-Build/inventories" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ansible-inventories.git
     [[ -d "$HOME/Ansible-Build/inventories/opsone" ]] && git -C "$HOME/Ansible-Build/inventories/opsone" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ops-one-ansible-inventory.git
-    [[ -d "$HOME/Odoo-Build/vault" ]] && git -C "$HOME/Odoo-Build/vault" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/odoo-build-vault.git
     [[ -d "$HOME/Kubernetes-Build/values" ]] && git -C "$HOME/Kubernetes-Build/values" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/helm-values.git
 
     echo "Clone Mint-System repos"
