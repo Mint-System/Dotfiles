@@ -402,7 +402,6 @@ setup-mint-system() {
     [[ ! -d "$HOME/VarLog" ]] && git clone git@github.com:Mint-System/VarLog.git "$HOME/VarLog"
 
     # Codey
-    [[ ! -d "$HOME/Odoo-Build/vault" ]] && git clone ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/odoo-build-vault.git "$HOME/Odoo-Build/vault"
     [[ ! -d "$HOME/Kubernetes-Build/values" ]] && git clone ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/helm-values.git "$HOME/Kubernetes-Build/values"
     [[ ! -d "$HOME/Ansible-Build/inventories" ]] && git clone ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ansible-inventories.git "$HOME/Ansible-Build/inventories"
     [[ ! -d "$HOME/Ansible-Build/inventories/opsone" ]] && git clone ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ops-one-ansible-inventory.git "$HOME/Ansible-Build/inventories/opsone"
