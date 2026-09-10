@@ -227,6 +227,11 @@ install-helm() {
         sudo pacman -S --noconfirm helm
     fi
 
+    echo "Install sops."
+    curl -LO https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.amd64
+    sudo mv sops-v3.13.3.linux.amd64 /usr/local/bin/sops
+    sudo chmod +x /usr/local/bin/sops
+
     echo "Install Helm Secrets Plugin." 
     helm plugin install oci://ghcr.io/jkroepke/helm-secrets/secrets:latest
     helm plugin install oci://ghcr.io/jkroepke/helm-secrets/secrets-getter:latest
