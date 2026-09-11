@@ -120,6 +120,7 @@ list() {
         rows+=("llm|Install LLM cli")
         rows+=("nextcloud|Install Nextcloud Desktop")
         rows+=("exo|Install Exoscale cli")
+        rows+=("hcloud|Install Hetzner cli")
         rows+=("uv|Install uv")
         rows+=("helm|Install Helm")
         rows+=("obsidian|Install Obsidian")
@@ -209,6 +210,12 @@ install-exo() {
     fi
 }
 
+install-hcloud() {
+    echo "Install Hetzner cli"
+    curl -sSLO https://github.com/hetznercloud/cli/releases/latest/download/hcloud-linux-amd64.tar.gz
+    sudo tar -C /usr/local/bin --no-same-owner -xzf hcloud-linux-amd64.tar.gz hcloud
+    rm hcloud-linux-amd64.tar.gz
+}
 
 install-kubectl() {
     echo "Install kubectl"
