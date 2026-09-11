@@ -119,6 +119,7 @@ list() {
         rows+=("Name|Description")
         rows+=("llm|Install LLM cli")
         rows+=("nextcloud|Install Nextcloud Desktop")
+        rows+=("exo|Install Exoscale cli")
         rows+=("uv|Install uv")
         rows+=("helm|Install Helm")
         rows+=("obsidian|Install Obsidian")
@@ -195,6 +196,13 @@ install-obsidian() {
         sudo pacman  -S --noconfirm obsidian
     fi
 }
+
+
+install-exo() {
+    echo "Install exo"
+    curl -fsSL https://raw.githubusercontent.com/exoscale/cli/master/install-latest.sh | sh
+}
+
 
 install-kubectl() {
     echo "Install kubectl"
