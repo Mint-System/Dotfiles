@@ -197,10 +197,16 @@ install-obsidian() {
     fi
 }
 
-
 install-exo() {
     echo "Install exo"
-    curl -fsSL https://raw.githubusercontent.com/exoscale/cli/master/install-latest.sh | sh
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        curl -fsSL https://raw.githubusercontent.com/exoscale/cli/master/install-latest.sh | sh
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        gpg --keyserver keys.openpgp.org --recv-key 7100E8BFD6199CE0374CB7F003686F8CDE378D41
+        git clone https://aur.archlinux.org/exoscale-cli-bin.git tmp/exoscale-cli-bin
+        cd tmp/exoscale-cli-bin
+        makepkg --install
+    fi
 }
 
 
