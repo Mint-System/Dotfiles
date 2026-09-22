@@ -26,6 +26,21 @@
         },
         "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8": {
           "name": "NVIDIA-Nemotron-3-Nano (Infomaniak)"
+        },
+        "bge_multilingual_gemma2": {
+          "name": "bge-multilingual-gemma2 (Infomaniak)"
+        },
+        "mini_lm_l12_v2": {
+          "name": "mini-lm-l12-v2 (Infomaniak)"
+        },
+        "google/gemma-4-31B-it": {
+          "name": "Gemma-4-31B (Infomaniak)"
+        },
+        "mistralai/Mistral-Small-4-119B-2603": {
+          "name": "Mistral-Small-4 (Infomaniak)"
+        },
+        "swiss-ai/Apertus-v1.5-70B": {
+          "name": "Apertus-v1.5-70B (Infomaniak)"
         }
       }
     }

@@ -22,3 +22,23 @@
   model_name: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
   api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
   api_key_name: infomaniak
+- model_id: bge_multilingual_gemma2
+  model_name: bge_multilingual_gemma2
+  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
+  api_key_name: infomaniak
+- model_id: mini_lm_l12_v2
+  model_name: mini_lm_l12_v2
+  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
+  api_key_name: infomaniak
+- model_id: google/gemma-4-31B-it
+  model_name: google/gemma-4-31B-it
+  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
+  api_key_name: infomaniak
+- model_id: mistralai/Mistral-Small-4-119B-2603
+  model_name: mistralai/Mistral-Small-4-119B-2603
+  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
+  api_key_name: infomaniak
+- model_id: swiss-ai/Apertus-v1.5-70B
+  model_name: swiss-ai/Apertus-v1.5-70B
+  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
+  api_key_name: infomaniak

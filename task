@@ -366,6 +366,17 @@ install-uv() {
     curl -LsSf https://astral.sh/uv/install.sh | sh
 }
 
+install-pi() {
+    echo "Install pi cli"
+    curl -fsSL https://pi.dev/install.sh | sh
+
+    echo "Setup pi models"
+    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)
+    mkdir -p ~/.pi/agent
+    envsubst '${INFOMANIAK_API_KEY}'  < ./pi/models.json > ~/.pi/agent/models.json
+    echo "Wrote ~/.pi/agent/models.json"
+}
+
 clone-mint-system-repos() {
     echo "Enable git credentials store"
     git config --global credential.helper store
