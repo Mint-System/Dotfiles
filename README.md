@@ -24,17 +24,13 @@ Clone the taskfile.build repo.
 
 The Mint System Nextcloud share provides the secrets store.
 
-The default paths to the database file are:
+Create a `.env` file add these paths:
 
 ```bash
 KEEPASS_DATABASE_FILE="$HOME/cloud.mint-system.ch/Mint System/Data/Infrastruktur.kdbx"
 KEEPASS_DATABASE_KEY_FILE="$HOME/cloud.mint-system.ch/Mint System/Secrets/KeePass.key"
 ```
 
-Create the `.env` to override the paths.
+You can also run `cp .env.template .env`.
 
-Install the `llm` cli. It will prompt for the database password.
-
-```bash
-./task install llm
-```
+Run `./task install llm` and it will prompt for the database password.

@@ -11,6 +11,7 @@ help-table() {
     local max_cmd=7 max_opt=6 max_desc=11
 
     rows+=("Command|Option|Description")
+    rows+=("clone-mint-system-repos||Clone Mint System git repos")
     rows+=("clone-taskfile||Clone the taskfile.build repo")
     rows+=("install|[name]|Install a package.")
     rows+=("uninstall|[name]|Uninstall a package.")
@@ -18,7 +19,6 @@ help-table() {
     rows+=("list-infomaniak-models||List all available Infomaniak ai models")
     rows+=("set-git-origin||Change git origin to ssh")
     rows+=("setup-passwordless-sudo||Get sudoers entry for passwordless sudo")
-    rows+=("setup-mint-system||Clone Mint System git repos")
 
     for row in "${rows[@]}"; do
         IFS='|' read -r cmd opt desc <<< "$row"
@@ -127,9 +127,8 @@ list() {
         rows+=("opencode|Install OpenCode cli")
         rows+=("pnpm|Install pnpm")
         rows+=("npm|Install npm")
-        rows+=("tools|Install common tools")
+        rows+=("yq|Install yq")
         rows+=("kubectl|Install kubectl and kubectx")
-        rows+=("kubeseal|Install kubeseal")
         rows+=("k9s|Install k9s")
         rows+=("kind|Install kind")
         rows+=("keepass|Install KeepassXC and keepassxc-cli")
@@ -178,7 +177,7 @@ uninstall() {
     $command
 }
 
-install-tools() {
+install-yq() {
     echo "Install yq"
     sudo wget https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 -O /usr/bin/yq &&\
     sudo chmod +x /usr/bin/yq
@@ -253,10 +252,10 @@ install-helm() {
     sudo mv sops-v3.13.3.linux.amd64 /usr/local/bin/sops
     sudo chmod +x /usr/local/bin/sops
 
-    echo "Install Helm Secrets Plugin." 
-    helm plugin install oci://ghcr.io/jkroepke/helm-secrets/secrets:latest
-    helm plugin install oci://ghcr.io/jkroepke/helm-secrets/secrets-getter:latest
-    helm plugin install oci://ghcr.io/jkroepke/helm-secrets/secrets-post-renderer:latest
+    echo "Install Helm sops plugin." 
+    curl -LO https://github.com/camptocamp/helm-sops/releases/download/20260618-1/helm-sops_20260618-1_linux_amd64.tar.gz
+    sudo tar -C /usr/local/bin --no-same-owner -xzf helm-sops_20260618-1_linux_amd64.tar.gz helm-sops
+    rm helm-sops_20260618-1_linux_amd64.tar.gz
 }
 
 install-keepass() {
@@ -282,23 +281,6 @@ install-k9s() {
     if [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
         sudo pacman -S --noconfirm k9s
     fi
-}
-
-install-kubeseal() {
-    # Fetch the latest sealed-secrets version using GitHub API
-    local kubeseal_version=$(curl -s https://api.github.com/repos/bitnami-labs/sealed-secrets/tags | jq -r '.[0].name' | cut -c 2-)
-
-    # Check if the version was fetched successfully
-    if [[ -z "$kubeseal_version" ]]; then
-        echo "Failed to fetch the latest kubeseal_version"
-        exit 1
-    fi
-
-    curl -OL "https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz"
-    tar -xvzf kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz kubeseal
-    sudo install -m 755 kubeseal /usr/local/bin/kubeseal
-    rm kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz
-    rm kubeseal
 }
 
 install-kind() {
@@ -347,11 +329,6 @@ install-opencode() {
     echo "File '$HOME/.config/opencode/opencode.json' written"
 }
 
-install-pi() {
-    echo "install pi cli"
-    curl -fsSL https://pi.dev/install.sh | sh
-}
-
 install-pnpm() {
     echo "Install pnpm"
     curl -fsSL https://get.pnpm.io/install.sh | sh -
@@ -389,7 +366,7 @@ install-uv() {
     curl -LsSf https://astral.sh/uv/install.sh | sh
 }
 
-setup-mint-system() {
+clone-mint-system-repos() {
     echo "Enable git credentials store"
     git config --global credential.helper store
 
