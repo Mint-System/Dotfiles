@@ -1,0 +1,176 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = []
+# ///
+
+import os
+import shlex
+import subprocess
+import sys
+from datetime import datetime, timezone
+from xmlrpc.client import ServerProxy
+
+
+def load_dotenv(env: str) -> None:
+    """Source the taskfile.build load-dotenv script and import env vars."""
+    load_dotenv_path = os.path.expanduser("~/taskfile.build/bin/load-dotenv")
+    task_dotenv_dir = os.environ.get(
+        "TASK_DOTENV_DIR", os.path.expanduser("~/.config/taskfile.build")
+    )
+    env_file = os.path.join(task_dotenv_dir, f".env.{env}")
+
+    if not os.path.isfile(env_file):
+        print(f"Env file not found: {env_file}", file=sys.stderr)
+        sys.exit(1)
+
+    cmd = (
+        f"source {shlex.quote(load_dotenv_path)} && load-dotenv \"$1\" >/dev/null && env -0"
+    )
+
+    result = subprocess.run(
+        ["bash", "-c", cmd, "_", env],
+        capture_output=True,
+        text=True,
+        env=os.environ,
+    )
+
+    if result.returncode != 0:
+        print(f"Failed to load env '{env}': {result.stderr}", file=sys.stderr)
+        sys.exit(1)
+
+    for line in result.stdout.split("\0"):
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        os.environ[key] = value
+
+
+def get_employee_id(uid: int, models: ServerProxy, db: str, password: str) -> int:
+    """Find the employee linked to the current Odoo user."""
+    employee_ids = models.execute_kw(
+        db,
+        uid,
+        password,
+        "hr.employee",
+        "search",
+        [[["user_id", "=", uid]]],
+        {"limit": 1},
+    )
+    if not employee_ids:
+        print("No employee found for the current user.", file=sys.stderr)
+        sys.exit(1)
+    return employee_ids[0]
+
+
+def format_duration(delta) -> str:
+    """Format a timedelta into a human readable string."""
+    total_seconds = int(delta.total_seconds())
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+
+    hour_label = "hour" if hours == 1 else "hours"
+    minute_label = "minute" if minutes == 1 else "minutes"
+
+    if hours > 0 and minutes > 0:
+        return f"{hours} {hour_label}, {minutes} {minute_label}"
+    elif hours > 0:
+        return f"{hours} {hour_label}"
+    else:
+        return f"{minutes} {minute_label}"
+
+
+def main() -> None:
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <env>", file=sys.stderr)
+        sys.exit(1)
+
+    env = sys.argv[1]
+    load_dotenv(env)
+
+    url = os.environ.get("ODOO_URL")
+    db = os.environ.get("ODOO_DATABASE")
+    username = os.environ.get("ODOO_USERNAME")
+    password = os.environ.get("ODOO_PASSWORD")
+
+    if not all((url, db, username, password)):
+        print("Missing Odoo credentials in environment.", file=sys.stderr)
+        sys.exit(1)
+
+    url = url.rstrip("/")
+    common = ServerProxy(f"{url}/xmlrpc/2/common")
+    uid = common.authenticate(db, username, password, {})
+
+    if not uid:
+        print("Authentication failed.", file=sys.stderr)
+        sys.exit(1)
+
+    models = ServerProxy(f"{url}/xmlrpc/2/object")
+    employee_id = get_employee_id(uid, models, db, password)
+
+    # Check for an open attendance record
+    open_ids = models.execute_kw(
+        db,
+        uid,
+        password,
+        "hr.attendance",
+        "search",
+        [[["employee_id", "=", employee_id], ["check_out", "=", False]]],
+        {"order": "check_in desc", "limit": 1},
+    )
+
+    if open_ids:
+        # User is checked in → check out
+        check_out = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+        models.execute_kw(
+            db,
+            uid,
+            password,
+            "hr.attendance",
+            "write",
+            [open_ids, {"check_out": check_out}],
+        )
+
+        attendance = models.execute_kw(
+            db,
+            uid,
+            password,
+            "hr.attendance",
+            "read",
+            [open_ids],
+            {"fields": ["check_in", "check_out"]},
+        )
+
+        check_in_str = attendance[0]["check_in"]
+        check_out_str = attendance[0]["check_out"]
+
+        check_in_dt = datetime.strptime(
+            check_in_str, "%Y-%m-%d %H:%M:%S"
+        ).replace(tzinfo=timezone.utc)
+        check_out_dt = datetime.strptime(
+            check_out_str, "%Y-%m-%d %H:%M:%S"
+        ).replace(tzinfo=timezone.utc)
+
+        logout_local = check_out_dt.astimezone()
+        duration = format_duration(check_out_dt - check_in_dt)
+
+        print(f"Checked out at {logout_local.strftime('%H:%M:%S')}")
+        print(duration)
+    else:
+        # User is not checked in → check in
+        check_in = datetime.now(timezone.utc)
+        check_in_str = check_in.strftime("%Y-%m-%d %H:%M:%S")
+        models.execute_kw(
+            db,
+            uid,
+            password,
+            "hr.attendance",
+            "create",
+            [{"employee_id": employee_id, "check_in": check_in_str}],
+        )
+
+        login_local = check_in.astimezone()
+        print(f"Checked in at {login_local.strftime('%H:%M:%S')}")
+
+
+if __name__ == "__main__":
+    main()
