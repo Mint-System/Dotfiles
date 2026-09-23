@@ -1,0 +1,6 @@
+{
+  "lastChangelogVersion": "0.87.0",
+  "theme": "dark",
+  "defaultProvider": "infomaniak",
+  "defaultModel": "moonshotai/Kimi-K2.6"
+}
