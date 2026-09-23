@@ -409,8 +409,8 @@ clone-mint-system-repos() {
     [[ -d "$HOME/VarLog" ]] && git -C "$HOME/VarLog" remote set-url origin git@github.com:Mint-System/VarLog.git
     # Codey
     [[ -d "$HOME/Ansible-Build/inventories" ]] && git -C "$HOME/Ansible-Build/inventories" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ansible-inventories.git
-    [[ -d "$HOME/Ansible-Build/inventories/opsone" ]] && git -C "$HOME/Ansible-Build/inventories/opsone" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ops-one-ansible-inventory.git
     [[ -d "$HOME/Kubernetes-Build/values" ]] && git -C "$HOME/Kubernetes-Build/values" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/helm-values.git
+    [[ -d "$HOME/Odoo-Build/addons/thirdparty" ]] && git -C "$HOME/Odoo-Build/addons/thirdparty" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/odoo-apps-thirdparty.git
 
     echo "Clone Mint-System repos"
     # GitHub
