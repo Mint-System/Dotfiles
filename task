@@ -137,6 +137,7 @@ list() {
         rows+=("helm|Install Helm")
         rows+=("obsidian|Install Obsidian")
         rows+=("opencode|Install OpenCode cli")
+        rows+=("openshift-cli|Install OpenShift cli")
         rows+=("pnpm|Install pnpm")
         rows+=("npm|Install npm")
         rows+=("yq|Install yq")
@@ -339,6 +340,14 @@ install-opencode() {
     mkdir -p "$HOME/.config/opencode"
     envsubst '${INFOMANIAK_API_KEY}' < "./opencode/config.json" > "$HOME/.config/opencode/opencode.json"
     echo "File '$HOME/.config/opencode/opencode.json' written"
+}
+
+install-openshift-cli() {
+    echo "Install OpenShift cli"
+    wcurl "https://downloads-openshift-console.apps.exoscale-ch-gva-2-0.appuio.cloud/amd64/linux/oc.tar"
+    tar -xf oc.tar
+    rm oc.tar
+    mv oc "$HOME/.local/bin/oc"
 }
 
 install-pnpm() {
