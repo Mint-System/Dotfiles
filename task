@@ -391,6 +391,9 @@ install-pi() {
     echo "Install pi cli"
     curl -fsSL https://pi.dev/install.sh | sh
 
+    echo "Install pi extension"
+    pi install npm:@juicesharp/rpiv-todo
+
     echo "Setup pi models"
     export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)
     mkdir -p ~/.pi/agent
