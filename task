@@ -409,6 +409,8 @@ clone-mint-system-repos() {
     git config --global credential.helper store
 
     echo "Update git origin"
+    # Codeberg
+    [[ -d "$HOME/main.build" ]] && git -C "$HOME/main.build" remote set-url origin ssh://git@codeberg.org/Mint-System/main.build.git
     # GitHub
     [[ -d "$HOME/Jenkins-Build" ]] && git -C "$HOME/Jenkins-Build" remote set-url origin git@github.com:Mint-System/Jenkins-Build.git
     [[ -d "$HOME/Nextcloud-Build" ]] && git -C "$HOME/Nextcloud-Build" remote set-url origin git@github.com:Mint-System/Nextcloud-Build.git
@@ -425,6 +427,8 @@ clone-mint-system-repos() {
     [[ -d "$HOME/Odoo-Build/addons/thirdparty" ]] && git -C "$HOME/Odoo-Build/addons/thirdparty" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/odoo-apps-thirdparty.git
 
     echo "Clone Mint-System repos"
+    # Codeberg
+    [[ -d "$HOME/main.build" ]] && git clone ssh://git@codeberg.org/Mint-System/main.build.git "$HOME/main.build"
     # GitHub
     [[ ! -d "$HOME/Jenkins-Build" ]] && git clone git@github.com:Mint-System/Jenkins-Build.git "$HOME/Jenkins-Build"
     [[ ! -d "$HOME/Nextcloud-Build" ]] && git clone git@github.com:Mint-System/Nextcloud-Build.git "$HOME/Nextcloud-Build"
