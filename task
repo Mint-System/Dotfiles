@@ -129,7 +129,8 @@ list() {
         local max_cmd=4 max_opt=11
 
         rows+=("Name|Description")
-        rows+=("llm|Install LLM cli")
+        rows+=("age|Install age")
+        rows+=("llm|Install llm")
         rows+=("nextcloud|Install Nextcloud Desktop")
         rows+=("exo|Install Exoscale cli")
         rows+=("hcloud|Install Hetzner cli")
@@ -146,6 +147,7 @@ list() {
         rows+=("kind|Install kind")
         rows+=("keepass|Install KeepassXC and keepassxc-cli")
         rows+=("postgresql-client|Install Postgers client tools")
+        rows+=("sops|Install sops")
 
         for row in "${rows[@]}"; do
             IFS='|' read -r name desc <<< "$row"
@@ -248,6 +250,22 @@ install-kubectl() {
     kubectl krew install ctx && kubectl krew install ns
 }
 
+install-age() {
+    echo "Install age."
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        sudo apt install -y age
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman  -S --noconfirm age
+    fi
+}
+
+install-sops() {
+    echo "Install sops."
+    curl -LO https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.amd64
+    sudo mv sops-v3.13.3.linux.amd64 /usr/local/bin/sops
+    sudo chmod +x /usr/local/bin/sops
+}
+
 install-helm() {
     echo  "Install Helm"
     if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
@@ -259,11 +277,6 @@ install-helm() {
     elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
         sudo pacman -S --noconfirm helm
     fi
-
-    echo "Install sops."
-    curl -LO https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.amd64
-    sudo mv sops-v3.13.3.linux.amd64 /usr/local/bin/sops
-    sudo chmod +x /usr/local/bin/sops
 
     echo "Install Helm sops plugin." 
     curl -LO https://github.com/camptocamp/helm-sops/releases/download/20260618-1/helm-sops_20260618-1_linux_amd64.tar.gz
