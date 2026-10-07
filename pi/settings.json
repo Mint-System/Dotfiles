@@ -1,8 +1,9 @@
 {
-  "lastChangelogVersion": "0.87.0",
+  "lastChangelogVersion": "1.0.4",
   "theme": "dark",
   "defaultProvider": "infomaniak",
   "defaultModel": "moonshotai/Kimi-K2.6",
+  "defaultTools": ["+codemode"],
   "packages": [
     "npm:@juicesharp/rpiv-todo"
   ]
