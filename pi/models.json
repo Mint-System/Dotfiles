@@ -53,6 +53,17 @@
           "name": "Apertus-v1.5-70B"
         }
       ]
+    },
+    "huggingface": {
+      "baseUrl": "https://router.huggingface.co/v1",
+      "api": "openai-completions",
+      "apiKey": "$HUGGINGFACE_ACCESS_TOKEN",
+      "headers": {
+        "X-HF-Bill-To": "mint-system"
+      },
+      "models": [
+        { "id": "moonshotai/Kimi-K2.7-Code" }
+      ]
     }
   }
 }

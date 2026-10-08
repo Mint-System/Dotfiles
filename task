@@ -409,8 +409,9 @@ install-pi() {
 
     echo "Setup pi models"
     export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)
+    export HUGGINGFACE_ACCESS_TOKEN=$(get-pass-from-keepass dotenv/huggingface_access_token)
     mkdir -p ~/.pi/agent
-    envsubst '${INFOMANIAK_API_KEY}'  < ./pi/models.json > ~/.pi/agent/models.json
+    envsubst '${INFOMANIAK_API_KEY}${HUGGINGFACE_ACCESS_TOKEN}'  < ./pi/models.json > ~/.pi/agent/models.json
     echo "Wrote ~/.pi/agent/models.json"
 
     echo "Symlink pi settings"
