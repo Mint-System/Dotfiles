@@ -116,7 +116,10 @@ set-git-origin(){
 
 list-infomaniak-models() {
     PRODUCT_ID=105852
-    INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)
+    local keepass_password
+    read -rsp "Enter Keepass database password: " keepass_password
+    echo
+    INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$keepass_password")
     curl -G \
          -H "Authorization: Bearer $INFOMANIAK_API_KEY" \
          -H "Content-Type: application/json" \
@@ -326,7 +329,10 @@ install-llm() {
     create-symlink "$PWD/llm/extra-openai-models.yaml" "$(dirname $(llm logs path))/extra-openai-models.yaml"
 
     echo "Set infomaniak api key"
-    llm keys set infomaniak --value "$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)"
+    local keepass_password
+    read -rsp "Enter Keepass database password: " keepass_password
+    echo
+    llm keys set infomaniak --value "$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$keepass_password")"
 
     echo "Set default model"
     llm models default Qwen/Qwen3-Embedding-8B
@@ -349,7 +355,10 @@ install-opencode() {
     curl -fsSL https://opencode.ai/install | bash
 
     echo "Setup opencode config"
-    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)
+    local keepass_password
+    read -rsp "Enter Keepass database password: " keepass_password
+    echo
+    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$keepass_password")
     mkdir -p "$HOME/.config/opencode"
     envsubst '${INFOMANIAK_API_KEY}' < "./opencode/config.json" > "$HOME/.config/opencode/opencode.json"
     echo "File '$HOME/.config/opencode/opencode.json' written"
@@ -408,10 +417,17 @@ install-pi() {
     pi install npm:@juicesharp/rpiv-todo
 
     echo "Setup pi models"
-    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key)
-    # export HUGGINGFACE_ACCESS_TOKEN=$(get-pass-from-keepass "dotenv/huggingface_${USERNAME}_access_token")
+    local keepass_password
+    read -rsp "Enter Keepass database password: " keepass_password
+    echo
+    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$keepass_password")
+    export HUGGINGFACE_ACCESS_TOKEN=$(get-pass-from-keepass "dotenv/huggingface_${USER}_access_token" "$keepass_password")
+    export SCALEWAY_API_KEY=$(get-pass-from-keepass "dotenv/scaleway_${USER}_api_key" "$keepass_password")
     mkdir -p ~/.pi/agent
-    envsubst '${INFOMANIAK_API_KEY}${HUGGINGFACE_ACCESS_TOKEN}'  < ./pi/models.json > ~/.pi/agent/models.json
+    INFOMANIAK_API_KEY="${INFOMANIAK_API_KEY:-<empty>}"
+    HUGGINGFACE_ACCESS_TOKEN="${HUGGINGFACE_ACCESS_TOKEN:-<empty>}"
+    SCALEWAY_API_KEY="${SCALEWAY_API_KEY:-<empty>}"
+    envsubst '${INFOMANIAK_API_KEY}${HUGGINGFACE_ACCESS_TOKEN}${SCALEWAY_API_KEY}'  < ./pi/models.json > ~/.pi/agent/models.json
     echo "Wrote ~/.pi/agent/models.json"
 
     echo "Symlink pi settings"

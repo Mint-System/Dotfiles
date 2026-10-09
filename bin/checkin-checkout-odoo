@@ -17,7 +17,7 @@ def load_dotenv(env: str) -> None:
     task_dotenv_dir = os.environ.get(
         "TASK_DOTENV_DIR", os.path.expanduser("~/.config/taskfile.build")
     )
-    env_file = os.path.join(task_dotenv_dir, f".env.{env}")
+    env_file = os.path.join(task_dotenv_dir, f"{env}.env")
 
     if not os.path.isfile(env_file):
         print(f"Env file not found: {env_file}", file=sys.stderr)
