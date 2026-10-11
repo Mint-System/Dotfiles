@@ -450,7 +450,6 @@ clone-mint-system-repos() {
     [[ -d "$HOME/Odoo-Wiki" ]] && git -C "$HOME/Odoo-Wiki" remote set-url origin git@github.com:Mint-System/Odoo-Wiki.git
     [[ -d "$HOME/Wiki" ]] && git -C "$HOME/Wiki" remote set-url origin git@github.com:Mint-System/Wiki.git
     [[ -d "$HOME/Website" ]] && git -C "$HOME/Website" remote set-url origin git@github.com:Mint-System/Website.git
-    [[ -d "$HOME/VarLog" ]] && git -C "$HOME/VarLog" remote set-url origin git@github.com:Mint-System/VarLog.git
     # Codey
     [[ -d "$HOME/Ansible-Build/inventories" ]] && git -C "$HOME/Ansible-Build/inventories" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ansible-inventories.git
     [[ -d "$HOME/Kubernetes-Build/values" ]] && git -C "$HOME/Kubernetes-Build/values" remote set-url origin ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/helm-values.git
@@ -468,7 +467,6 @@ clone-mint-system-repos() {
     [[ ! -d "$HOME/Odoo-Wiki" ]] && git clone git@github.com:Mint-System/Odoo-Wiki.git "$HOME/Odoo-Wiki"
     [[ ! -d "$HOME/Wiki" ]] && git clone git@github.com:Mint-System/Wiki.git "$HOME/Wiki"
     [[ ! -d "$HOME/Website" ]] && git clone git@github.com:Mint-System/Website.git "$HOME/Website"
-    [[ ! -d "$HOME/VarLog" ]] && git clone git@github.com:Mint-System/VarLog.git "$HOME/VarLog"
     # Codey
     [[ ! -d "$HOME/Kubernetes-Build/values" ]] && git clone ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/helm-values.git "$HOME/Kubernetes-Build/values"
     [[ ! -d "$HOME/Ansible-Build/inventories" ]] && git clone ssh://git@ssh.cls-rma1-503b.servala.com:10007/mint-system/ansible-inventories.git "$HOME/Ansible-Build/inventories"
