@@ -10,47 +10,66 @@
       "models": [
         {
           "id": "bge_multilingual_gemma2",
-          "name": "bge-multilingual-gemma2"
+          "name": "bge-multilingual-gemma2",
+          "contextWindow": 8192
         },
         {
           "id": "google/gemma-4-31B-it",
-          "name": "Gemma-4-31B"
+          "name": "Gemma-4-31B",
+          "contextWindow": 262144,
+          "maxTokens": 32768
         },
         {
           "id": "mini_lm_l12_v2",
-          "name": "mini-lm-l12-v2"
+          "name": "mini-lm-l12-v2",
+          "contextWindow": 512
         },
         {
           "id": "mistralai/Ministral-3-14B-Instruct-2512",
-          "name": "Ministral-3"
+          "name": "Ministral-3",
+          "contextWindow": 262144,
+          "maxTokens": 16384
         },
         {
           "id": "mistralai/Mistral-Small-4-119B-2603",
-          "name": "Mistral-Small-4"
+          "name": "Mistral-Small-4",
+          "contextWindow": 262144,
+          "maxTokens": 16384
         },
         {
           "id": "moonshotai/Kimi-K2.6",
-          "name": "Kimi-K2.6"
+          "name": "Kimi-K2.6",
+          "contextWindow": 262144,
+          "maxTokens": 262144
         },
         {
           "id": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8",
-          "name": "NVIDIA-Nemotron-3-Nano"
+          "name": "NVIDIA-Nemotron-3-Nano",
+          "contextWindow": 262144,
+          "maxTokens": 16384
         },
         {
           "id": "Qwen/Qwen3-Embedding-8B",
-          "name": "Qwen3-Embedding-8B"
+          "name": "Qwen3-Embedding-8B",
+          "contextWindow": 40960
         },
         {
           "id": "Qwen/Qwen3.5-122B-A10B-FP8",
-          "name": "Qwen3.5-122B"
+          "name": "Qwen3.5-122B",
+          "contextWindow": 262144,
+          "maxTokens": 65536
         },
         {
           "id": "Qwen/Qwen3.5-397B-A17B-FP8",
-          "name": "Qwen3.5-397B"
+          "name": "Qwen3.5-397B",
+          "contextWindow": 262144,
+          "maxTokens": 32768
         },
         {
           "id": "swiss-ai/Apertus-v1.5-70B",
-          "name": "Apertus-v1.5-70B"
+          "name": "Apertus-v1.5-70B",
+          "contextWindow": 262144,
+          "maxTokens": 8192
         }
       ]
     },
@@ -62,7 +81,12 @@
         "X-HF-Bill-To": "mint-system"
       },
       "models": [
-        { "id": "moonshotai/Kimi-K2.7-Code" }
+        {
+          "id": "moonshotai/Kimi-K2.7-Code",
+          "name": "Kimi-K2.7-Code",
+          "contextWindow": 262144,
+          "maxTokens": 262144
+        }
       ]
     },
     "scaleway": {
@@ -72,7 +96,9 @@
       "models": [
         {
           "id": "deepseek-v4-flash-0731",
-          "name": "DeepSeek-V4-Flash"
+          "name": "DeepSeek-V4-Flash",
+          "contextWindow": 1048576,
+          "maxTokens": 384000
         }
       ]
     }
