@@ -144,6 +144,7 @@ list() {
         rows+=("openshift-cli|Install OpenShift cli")
         rows+=("pnpm|Install pnpm")
         rows+=("npm|Install npm")
+        rows+=("fzf|Install fzf")
         rows+=("yq|Install yq")
         rows+=("kubectl|Install kubectl and kubectx")
         rows+=("k9s|Install k9s")
@@ -402,6 +403,12 @@ install-npm() {
     if [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
         sudo pacman -S --noconfirm npm
     fi
+}
+
+install-fzf() {
+    echo "Install fzf"
+    [[ ! -d "$HOME/.fzf" ]] &&  git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+    yes | "$HOME/.fzf/install"
 }
 
 install-uv() {
