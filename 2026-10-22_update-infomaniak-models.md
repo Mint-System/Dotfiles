@@ -1,14 +1,14 @@
 ---
-commit_ref:
+commit_ref: 1d1c5cce5a5d182937a70e08fe34c115148e9c55
 title: "Update Infomaniak models"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 action: implement
-state: draft
-date_completed: YYYY-MM-DD
-harness:
-model:
-input_tokens:
-output_tokens:
+state: completed
+date_completed: 2026-10-22
+harness: pi 1.3.0
+model: deepseek-v4-flash-0731 (scaleway)
+input_tokens: n/a
+output_tokens: n/a
 ---
 
 # Update Infomaniak models
@@ -59,6 +59,11 @@ Update the `pi/models.json` and the `llm/extra-openai-models.yaml` with the new 
 
 ## Worklog
 
-@Clanker Add a summary here once the task has been completed.
+Replaced the deprecated Infomaniak model `Qwen/Qwen3.5-122B-A10B-FP8` with its successor in:
+
+- `pi/models.json` (Infomaniak provider, `id` and `name` updated)
+- `llm/extra-openai-models.yaml` (`model_id` and `model_name` updated)
+
+Note: The email named the replacement `Qwen/Qwen3.8-27B`, but the Infomaniak API rejected that id (`validation_failed`). The API's allowed values show the correct id is `Qwen/Qwen3.8-27B-FP8` (the friendly display name stays `Qwen3.8-27B`).
 
 @Clanker If author confirms results set frontmatter state to completed, otherwise to aborted. Update date, harness and model. If you have access to session info also add token count.
