@@ -54,8 +54,8 @@
           // "contextWindow": 40960
         },
         {
-          "id": "Qwen/Qwen3.5-122B-A10B-FP8",
-          "name": "Qwen3.5-122B",
+          "id": "Qwen/Qwen3.8-27B-FP8",
+          "name": "Qwen3.8-27B",
           // "contextWindow": 262144,
           // "maxTokens": 65536
         },
