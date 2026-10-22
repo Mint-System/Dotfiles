@@ -1,5 +1,5 @@
 ---
-commit_ref: 14f8fc685259b86f5e9643c4bfc6fa9076a7b11c
+commit_ref: 85a8c8ff5e128cafde95a1125af434fe6314d4e4
 title: "Add support for Scaleway provider and models to Pi"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 state: completed
