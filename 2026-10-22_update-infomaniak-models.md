@@ -1,5 +1,5 @@
 ---
-commit_ref: 1d1c5cce5a5d182937a70e08fe34c115148e9c55
+commit_ref: 0f0507e7a2f8936e8efd417d42492c7135607fd2
 title: "Update Infomaniak models"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 action: implement
