@@ -8,5 +8,8 @@
   ],
   "packages": [
     "npm:@juicesharp/rpiv-todo"
-  ]
+  ],
+  "compaction": {
+    "enabled": false
+  }
 }
