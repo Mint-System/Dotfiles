@@ -27,7 +27,11 @@ Note: @Clanker refers to the "ai agent" (you) who is working on this prompt file
 
 ## Task
 
+### Install command
+
 In `tmp/prompt-log/2026-10-27_get-database-path-from-running-keepassxc.md` I learned about the `kpx-cli` / https://github.com/LavieX/kpx . Please add a `install-kpx` task.
+
+### Taskfile commands
 
 Then I want you to update the keepass command to use the `kpx` cli:
 
@@ -43,13 +47,13 @@ bin/save-pass-to-keepass
 bin/store-agekey-to-keepass
 ```
 
-Document kpx as requirement in `~/taskfile.build/docs/library.md`.
+### Documentation
 
-Do not forget about the tests.
+Document kpx as requirement in `~/taskfile.build/docs/library.md`.
 
 ### Testing
 
-Once the kpx cli and new commands are ready, I will test it by running
+Once the kpx cli and new commands are ready, I will test it by running:
 
 ```
 cd ~/Wiki
@@ -61,7 +65,7 @@ task load-agekey-from-keepass
 
 If this works you can move any mentions of `KEEPASS_DATABASE_FILE` and `KEEPASS_DATABASE_KEY_FILE` in this project and in `~/taskfile.build`.
 
-Also instructions `README.md`. 
+Also update instructions `README.md`. 
 
 @Clanker When task is completed set frontmatter state to review. Prompt the author to verify the results.
 
