@@ -61,11 +61,6 @@ help() {
     echo
 }
 
-# Updateable env vars
-
-KEEPASS_DATABASE_FILE=${KEEPASS_DATABASE_FILE:="$HOME/cloud.mint-system.ch/Mint System/Data/Infrastruktur.kdbx"}
-KEEPASS_DATABASE_KEY_FILE=${KEEPASS_DATABASE_KEY_FILE:="$HOME/cloud.mint-system.ch/Mint System/Secrets/KeePass.key"}
-
 # Conditional env vars
 
 if command -v pacman >/dev/null 2>&1; then
