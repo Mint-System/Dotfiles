@@ -428,8 +428,8 @@ install-pi() {
     read -rsp "Enter Keepass database password: " keepass_password
     echo
     export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$keepass_password")
-    export HUGGINGFACE_ACCESS_TOKEN=$(get-pass-from-keepass "dotenv/huggingface_${USER}_access_token" "$keepass_password")
-    export SCALEWAY_API_KEY=$(get-pass-from-keepass "dotenv/scaleway_${USER}_api_key" "$keepass_password")
+    # export HUGGINGFACE_ACCESS_TOKEN=$(get-pass-from-keepass "dotenv/huggingface_${USER}_access_token" "$keepass_password")
+    # export SCALEWAY_API_KEY=$(get-pass-from-keepass "dotenv/scaleway_${USER}_api_key" "$keepass_password")
     mkdir -p ~/.pi/agent
     INFOMANIAK_API_KEY="${INFOMANIAK_API_KEY:-<empty>}"
     HUGGINGFACE_ACCESS_TOKEN="${HUGGINGFACE_ACCESS_TOKEN:-<empty>}"
