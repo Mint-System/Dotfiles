@@ -1,17 +1,17 @@
 ---
 commit_ref:
-title: "set max token settings"
+title: "Use new select database command"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 action: implement
-state: aborted
+state: completed
 date_completed: 2026-10-29
 harness: pi 1.4.0
 model: Qwen/Qwen3.8-27B-FP8 (infomaniak)
-input_tokens: 36309
-output_tokens: 12988
+input_tokens: 85585
+output_tokens: 52036
 ---
 
-# set max token settings
+# Use new select database command
 
 Note: @Clanker refers to the "ai agent" (you) who is working on this prompt file.
 
@@ -23,34 +23,50 @@ Note: @Clanker refers to the "ai agent" (you) who is working on this prompt file
 
 ## Task
 
-When using pi and any model I often run into this issue: https://github.com/earendil-works/pi/issues/7855
+When I run `install-pi` I get prompted for the KeePass database password.
 
-It seems adding max token info to `pi/models.json` helps resolving this issue.
+Then the `get-pass-from-keepass` retrieves the api key. Every time the new command `select-keepass-database` called.
 
-Get the max token info for all models and upate the file.
+And this happens 3 times in total. Instead the database selection should happen once.
 
-I will then `task install pi` and check if it works.
+Run `select-keepass-database` first and then prompt for password.
+
+Store the selection of `select-keepass-database`.
+
+Then call `get-pass-from-keepass` with all the credentials required.
+
+If necessary setup en vars to the "KEEPASS_DATABASE_FILE" and "KEEPASS_DATABASE_KEY_FILE" to pass the selection.
 
 @Clanker When task is completed set frontmatter state to review. Prompt the author to verify the results.
 
 ## Worklog
 
-@Clanker Add a summary here once the task has been completed.
+### Summary
 
-## Summary
+**Root cause** — two compounding bugs:
 
-Filled in `contextWindow` and `maxTokens` for all 13 models in `pi/models.json` (they were previously commented out, which caused pi to fall back to defaults and hit the truncation issue described in https://github.com/earendil-works/pi/issues/7855).
+1. In `taskfile.build` (commit `dd0ac45`) the KeePass utilities were migrated to lowercase `keepass_database_file`, but `select-keepass-database` still prints `KEEPASS_DATABASE_FILE=...` (uppercase). After the fzf selection the utilities therefore never saw the path and failed with `Keepass database file not found:` — this is why the HuggingFace/Scaleway lookups had to be commented out.
+2. `install-pi` called `$(get-pass-from-keepass ...)` 3 times; each call runs in a subshell, so the selection never persisted and `select-keepass-database` (fzf) was triggered 3 times.
 
-Values were gathered from authoritative sources:
+**Changes**
 
-- **pi.dev catalog** (downloaded in `~/.pi/agent/models-store.json`) and the HuggingFace router for models also served there: `google/gemma-4-31B-it` (262144/32768), `moonshotai/Kimi-K2.6` (262144/262144), `moonshotai/Kimi-K2.7-Code` (262144/262144), `Qwen/Qwen3.5-397B-A17B-FP8` (262144/32768), `Qwen/Qwen3.8-27B-FP8` (262144/32768), `deepseek-v4-flash-0731` (1048576/384000).
-- **Official model cards/papers**: Mistral Ministral-3 and Mistral-Small-4 (256k context), NVIDIA Nemotron-3-Nano-30B-A3B-FP8 (default 256k context), Apertus v1.5 paper (262,144 context; 16,384-token decode budget), Qwen3-Embedding-8B (32k sequence length).
-- **Embedding models** got `contextWindow` only (they don't generate output): `bge_multilingual_gemma2` (8192), `mini_lm_l12_v2` (512), `Qwen/Qwen3-Embedding-8B` (32768).
+`taskfile.build` (library bugfix, same mechanical revert in all affected scripts):
+- `bin/get-pass-from-keepass` plus `save-pass-to-keepass`, `save-dotenv-to-keepass`, `load-dotenv-from-keepass`, `save-kubeconfig-to-keepass`, `load-kubeconfig-from-keepass`, `store-agekey-to-keepass`, `load-agekey-from-keepass`, `show-project-setup`: use the uppercase `KEEPASS_DATABASE_FILE` / `KEEPASS_DATABASE_KEY_FILE` env vars again, matching the output of `select-keepass-database`. When the env vars are set and valid the database is **not** re-selected.
+- `tests/test_sops`: removed the now-unneeded lowercase exports (the uppercase ones were already exported there).
 
-Corrections vs. the previously commented-out guesses: `Qwen/Qwen3-Embedding-8B` context 40960 → 32768 (official spec is 32K), `Qwen/Qwen3.8-27B-FP8` maxTokens 65536 → 32768 (pi.dev catalog), `Apertus-v1.5-70B` maxTokens 8192 → 16384 (paper decode budget).
+`mint-system-dotfiles/task`:
+- New `setup-keepass()` helper: runs `select-keepass-database` **once** (skipped when `KEEPASS_DATABASE_FILE` is already set and valid), stores the selection in `KEEPASS_DATABASE_FILE` / `KEEPASS_DATABASE_KEY_FILE`, drops stale/nonexistent values, exports both, and prompts for the database password **once** (`KEEPASS_DATABASE_PASSWORD`).
+- `install-pi`: calls `setup-keepass` first, then reads all 3 credentials with `get-pass-from-keepass` (the commented-out HuggingFace + Scaleway lookups are restored).
+- `install-llm`, `install-opencode`, `list-infomaniak-models`: same pattern, so the database is only selected once per run everywhere.
 
-Verified: `pi/models.json` is valid JSON and `pi --list-models` shows the new context/max-out values for every model.
+**Testing** (fake `keepassxc-cli` capturing its arguments, non-interactive):
+- 20/20 checks pass: stored selection is respected without re-selecting; the install-pi sequence selects once and reads all 3 entries; pre-set env vars skip selection; a missing database fails cleanly; stale `KEEPASS_*` env vars are replaced by a fresh selection.
+- `bash -n` + shellcheck (warning level) clean on all touched files.
 
-@Author aborted this change on 2026-10-29. All token settings in `pi/models.json` were commented out again (verified values kept as comments for future reference), so pi falls back to its defaults (128k context / 16k max-out) as before.
+**Note**: the current environment exports stale `KEEPASS_DATABASE_FILE` / `KEEPASS_DATABASE_KEY_FILE` pointing at `janikv.cloud/...` (path does not exist). `setup-keepass` now recovers from this automatically, but you may want to find where they are exported and remove them.
+
+@Author please verify: run `./task install pi` and check that the database is selected once, the password is prompted once, and all 3 API keys are retrieved. If the results look good, confirm so I can mark this completed.
+
+@Author confirmed on 2026-10-29: `./task install pi` selected the database once, prompted for the password once, retrieved all 3 API keys and wrote `~/.pi/agent/models.json` (the repeated `Enter password to unlock` lines are keepassxc-cli's own prompt while reading the piped password).
 
 @Clanker If author confirms results set frontmatter state to completed, otherwise to aborted. Update date, harness and model. If you have access to session info also add token count.

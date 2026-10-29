@@ -109,12 +109,49 @@ set-git-origin(){
     git remote set-url origin git@github.com:Mint-System/Dotfiles.git
 }
 
+# Select the KeePass database once and store the selection in
+# KEEPASS_DATABASE_FILE / KEEPASS_DATABASE_KEY_FILE, then prompt for
+# the database password once. The stored selection is picked up by
+# get-pass-from-keepass, so the database is only selected once per
+# run no matter how many credentials are read.
+setup-keepass() {
+    if [[ -z "${KEEPASS_DATABASE_FILE:-}" || ! -f "${KEEPASS_DATABASE_FILE:-}" ]]; then
+        # Start from a clean slate so stale values don't leak in
+        unset KEEPASS_DATABASE_FILE KEEPASS_DATABASE_KEY_FILE
+        local line
+        while IFS= read -r line; do
+            case "$line" in
+                KEEPASS_DATABASE_FILE=*)
+                    KEEPASS_DATABASE_FILE="${line#KEEPASS_DATABASE_FILE=}" ;;
+                KEEPASS_DATABASE_KEY_FILE=*)
+                    KEEPASS_DATABASE_KEY_FILE="${line#KEEPASS_DATABASE_KEY_FILE=}" ;;
+            esac
+        done < <(select-keepass-database)
+        KEEPASS_DATABASE_FILE="${KEEPASS_DATABASE_FILE//\"/}"
+        KEEPASS_DATABASE_KEY_FILE="${KEEPASS_DATABASE_KEY_FILE//\"/}"
+    fi
+
+    if [[ -z "${KEEPASS_DATABASE_FILE:-}" || ! -f "${KEEPASS_DATABASE_FILE:-}" ]]; then
+        echo "Failed to select KeePass database." >&2
+        exit 1
+    fi
+    # A key file that no longer exists cannot be used, so drop it
+    if [[ -n "${KEEPASS_DATABASE_KEY_FILE:-}" && ! -f "${KEEPASS_DATABASE_KEY_FILE:-}" ]]; then
+        unset KEEPASS_DATABASE_KEY_FILE
+    fi
+    export KEEPASS_DATABASE_FILE
+    if [[ -n "${KEEPASS_DATABASE_KEY_FILE:-}" ]]; then
+        export KEEPASS_DATABASE_KEY_FILE
+    fi
+
+    read -rsp "Enter Keepass database password: " KEEPASS_DATABASE_PASSWORD
+    echo
+}
+
 list-infomaniak-models() {
     PRODUCT_ID=105852
-    local keepass_password
-    read -rsp "Enter Keepass database password: " keepass_password
-    echo
-    INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$keepass_password")
+    setup-keepass
+    INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$KEEPASS_DATABASE_PASSWORD")
     curl -G \
          -H "Authorization: Bearer $INFOMANIAK_API_KEY" \
          -H "Content-Type: application/json" \
@@ -330,10 +367,8 @@ install-llm() {
     create-symlink "$PWD/llm/extra-openai-models.yaml" "$(dirname $(llm logs path))/extra-openai-models.yaml"
 
     echo "Set infomaniak api key"
-    local keepass_password
-    read -rsp "Enter Keepass database password: " keepass_password
-    echo
-    llm keys set infomaniak --value "$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$keepass_password")"
+    setup-keepass
+    llm keys set infomaniak --value "$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$KEEPASS_DATABASE_PASSWORD")"
 
     echo "Set default model"
     llm models default Qwen/Qwen3-Embedding-8B
@@ -356,10 +391,8 @@ install-opencode() {
     curl -fsSL https://opencode.ai/install | bash
 
     echo "Setup opencode config"
-    local keepass_password
-    read -rsp "Enter Keepass database password: " keepass_password
-    echo
-    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$keepass_password")
+    setup-keepass
+    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$KEEPASS_DATABASE_PASSWORD")
     mkdir -p "$HOME/.config/opencode"
     envsubst '${INFOMANIAK_API_KEY}' < "./opencode/config.json" > "$HOME/.config/opencode/opencode.json"
     echo "File '$HOME/.config/opencode/opencode.json' written"
@@ -424,12 +457,10 @@ install-pi() {
     pi install npm:@juicesharp/rpiv-todo
 
     echo "Setup pi models"
-    local keepass_password
-    read -rsp "Enter Keepass database password: " keepass_password
-    echo
-    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$keepass_password")
-    # export HUGGINGFACE_ACCESS_TOKEN=$(get-pass-from-keepass "dotenv/huggingface_${USER}_access_token" "$keepass_password")
-    # export SCALEWAY_API_KEY=$(get-pass-from-keepass "dotenv/scaleway_${USER}_api_key" "$keepass_password")
+    setup-keepass
+    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$KEEPASS_DATABASE_PASSWORD")
+    export HUGGINGFACE_ACCESS_TOKEN=$(get-pass-from-keepass "dotenv/huggingface_${USER}_access_token" "$KEEPASS_DATABASE_PASSWORD")
+    export SCALEWAY_API_KEY=$(get-pass-from-keepass "dotenv/scaleway_${USER}_api_key" "$KEEPASS_DATABASE_PASSWORD")
     mkdir -p ~/.pi/agent
     INFOMANIAK_API_KEY="${INFOMANIAK_API_KEY:-<empty>}"
     HUGGINGFACE_ACCESS_TOKEN="${HUGGINGFACE_ACCESS_TOKEN:-<empty>}"
