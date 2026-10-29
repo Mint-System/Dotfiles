@@ -3,7 +3,7 @@ commit_ref:
 title: "set max token settings"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 action: implement
-state: aborted
+state: cancelled
 date_completed: 2026-10-29
 harness: pi 1.4.0
 model: Qwen/Qwen3.8-27B-FP8 (infomaniak)
@@ -51,6 +51,6 @@ Corrections vs. the previously commented-out guesses: `Qwen/Qwen3-Embedding-8B` 
 
 Verified: `pi/models.json` is valid JSON and `pi --list-models` shows the new context/max-out values for every model.
 
-@Author aborted this change on 2026-10-29. All token settings in `pi/models.json` were commented out again (verified values kept as comments for future reference), so pi falls back to its defaults (128k context / 16k max-out) as before.
+@Author cancelled this change on 2026-10-29. All token settings in `pi/models.json` were commented out again (verified values kept as comments for future reference), so pi falls back to its defaults (128k context / 16k max-out) as before.
 
 @Clanker If author confirms results set frontmatter state to completed, otherwise to aborted. Update date, harness and model. If you have access to session info also add token count.
