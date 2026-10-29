@@ -3,7 +3,7 @@ commit_ref:
 title: "Setup kpx-cli"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 action: implement
-state: cancelled
+state: draft
 date_completed: YYYY-MM-DD
 harness:
 model:
