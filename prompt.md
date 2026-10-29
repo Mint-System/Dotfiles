@@ -1,5 +1,5 @@
 ---
-title: "set max token settings"
+title: "Use new select database command"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 action: implement
 state: draft
@@ -10,7 +10,7 @@ input_tokens:
 output_tokens:
 ---
 
-# set max token settings
+# Use new select database command
 
 Note: @Clanker refers to the "ai agent" (you) who is working on this prompt file.
 
@@ -22,13 +22,19 @@ Note: @Clanker refers to the "ai agent" (you) who is working on this prompt file
 
 ## Task
 
-When using pi and any model I often run into this issue: https://github.com/earendil-works/pi/issues/7855
+When I run `install-pi` I get prompted for the KeePass database password.
 
-It seems adding max token info to `pi/models.json` helps resolving this issue.
+Then the `get-pass-from-keepass` retrieves the api key. Every time the new command `select-keepass-database` called.
 
-Get the max token info for all models and upate the file.
+And this happens 3 times in total. Instead the database selection should happen once.
 
-I will then `task install pi` and check if it works.
+Run `select-keepass-database` first and then prompt for password.
+
+Store the selection of `select-keepass-database`.
+
+Then call `get-pass-from-keepass` with all the credentials required.
+
+If necessary setup en vars to the "KEEPASS_DATABASE_FILE" and "KEEPASS_DATABASE_KEY_FILE" to pass the selection.
 
 @Clanker When task is completed set frontmatter state to review. Prompt the author to verify the results.
 
