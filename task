@@ -178,7 +178,7 @@ list() {
         rows+=("npm|Install npm")
         rows+=("fzf|Install fzf")
         rows+=("yq|Install yq")
-        rows+=("kubectl|Install kubectl and kubectx")
+        rows+=("kubectl|Install kubectl")
         rows+=("k9s|Install k9s")
         rows+=("kind|Install kind")
         rows+=("keepass|Install KeepassXC and keepassxc-cli")
@@ -281,9 +281,6 @@ install-kubectl() {
     curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
     tar zxvf "${KREW}.tar.gz" &&
     ./"${KREW}" install krew
-
-    echo "Install kubectx and kubectx-ns"
-    kubectl krew install ctx && kubectl krew install ns
 }
 
 install-age() {
