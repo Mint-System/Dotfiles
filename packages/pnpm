@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("pnpm|Install pnpm")
+
+install-pnpm() {
+    echo "Install pnpm"
+    curl -fsSL https://get.pnpm.io/install.sh | sh -
+
+    log-warning "Run this command to install Node for your project:"
+    echo "pnpm env use --global lts"
+}
+
+uninstall-pnpm() {
+    echo "Uninstall pnpm"
+    
+    echo "This will delete: $PNPM_HOME"
+    read -p "Are you sure? (y/N) " confirm
+    
+    if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+        rm -rf "$PNPM_HOME"
+        echo "pnpm uninstalled successfully"
+    else
+        echo "Aborted"
+    fi
+}

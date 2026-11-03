@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("nextcloud|Install Nextcloud Desktop")
+
+install-nextcloud() {
+    echo "Install Nextcloud Desktop"
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        sudo add-apt-repository ppa:xtradeb/apps
+        sudo apt update && sudo apt install -y nextcloud-desktop
+    elif [[ "$PACKAGE_MANAGER" == "dnf" ]]; then
+        sudo dnf install -y nextcloud-client
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman  -S --noconfirm nextcloud-client
+    fi
+}

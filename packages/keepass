@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("keepass|Install KeepassXC and keepassxc-cli")
+
+install-keepass() {
+    echo "Install KeepassXC"
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        sudo add-apt-repository ppa:phoerious/keepassxc
+        sudo apt update && sudo apt install -y keepassxc
+    elif [[ "$PACKAGE_MANAGER" == "dnf" ]]; then
+        sudo dnf install -y keepassxc
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman -S --noconfirm keepassxc
+    fi
+}

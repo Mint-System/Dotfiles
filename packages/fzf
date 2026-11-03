@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("fzf|Install fzf")
+
+install-fzf() {
+    echo "Install fzf"
+    [[ ! -d "$HOME/.fzf" ]] &&  git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+    yes | "$HOME/.fzf/install"
+}

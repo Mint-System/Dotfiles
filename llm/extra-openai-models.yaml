@@ -2,43 +2,11 @@
   model_name: qwen3
   api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
   api_key_name: infomaniak
-- model_id: Qwen/Qwen3.8-27B-FP8
-  model_name: Qwen/Qwen3.8-27B-FP8
-  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
-  api_key_name: infomaniak
-- model_id: Qwen/Qwen3.5-397B-A17B-FP8
-  model_name: Qwen/Qwen3.5-397B-A17B-FP8
-  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
-  api_key_name: infomaniak
-- model_id: moonshotai/Kimi-K2.6
-  model_name: moonshotai/Kimi-K2.6
-  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
-  api_key_name: infomaniak
-- model_id: mistralai/Ministral-3-14B-Instruct-2512
-  model_name: mistralai/Ministral-3-14B-Instruct-2512
-  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
-  api_key_name: infomaniak
-- model_id: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
-  model_name: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
-  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
-  api_key_name: infomaniak
-- model_id: bge_multilingual_gemma2
-  model_name: bge_multilingual_gemma2
-  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
-  api_key_name: infomaniak
-- model_id: mini_lm_l12_v2
-  model_name: mini_lm_l12_v2
-  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
-  api_key_name: infomaniak
-- model_id: google/gemma-4-31B-it
-  model_name: google/gemma-4-31B-it
-  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
-  api_key_name: infomaniak
-- model_id: mistralai/Mistral-Small-4-119B-2603
-  model_name: mistralai/Mistral-Small-4-119B-2603
-  api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
-  api_key_name: infomaniak
 - model_id: swiss-ai/Apertus-v1.5-70B
   model_name: swiss-ai/Apertus-v1.5-70B
   api_base: https://api.infomaniak.com/2/ai/105852/openai/v1
   api_key_name: infomaniak
+- model_id: codestral-latest
+  model_name: codestral-latest
+  api_base: https://api.mistral.ai/v1
+  api_key_name: mistral

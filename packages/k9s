@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("k9s|Install k9s")
+
+install-k9s() {
+    echo "Install k9s"
+    if [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman -S --noconfirm k9s
+    fi
+}

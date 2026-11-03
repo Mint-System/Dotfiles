@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("age|Install age")
+
+install-age() {
+    echo "Install age."
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        sudo apt install -y age
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman  -S --noconfirm age
+    fi
+}

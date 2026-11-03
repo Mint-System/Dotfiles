@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("opencode|Install OpenCode cli")
+
+install-opencode() {
+    echo "Install OpenCode cli"
+    curl -fsSL https://opencode.ai/install | bash
+
+    echo "Setup OpenCode config"
+    setup-keepass
+    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$KEEPASS_DATABASE_PASSWORD")
+    mkdir -p "$HOME/.config/opencode"
+    envsubst '${INFOMANIAK_API_KEY}' < "./opencode/config.json" > "$HOME/.config/opencode/opencode.json"
+    echo "File '$HOME/.config/opencode/opencode.json' written"
+}

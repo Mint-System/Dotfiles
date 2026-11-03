@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("postgresql-client|Install Postgers client tools")
+
+install-postgresql-client() {
+    echo "Install Postgres client tools 16"
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        sudo postgresql-client-16
+    fi
+}

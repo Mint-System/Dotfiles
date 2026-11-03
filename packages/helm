@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("helm|Install Helm")
+
+install-helm() {
+    echo  "Install Helm"
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+        sudo apt install apt-transport-https --yes
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+        sudo apt update
+        sudo apt install -y  helm
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman -S --noconfirm helm
+    fi
+
+    echo "Install Helm sops plugin." 
+    curl -LO https://github.com/camptocamp/helm-sops/releases/download/20260618-1/helm-sops_20260618-1_linux_amd64.tar.gz
+    sudo tar -C /usr/local/bin --no-same-owner -xzf helm-sops_20260618-1_linux_amd64.tar.gz helm-sops
+    rm helm-sops_20260618-1_linux_amd64.tar.gz
+}

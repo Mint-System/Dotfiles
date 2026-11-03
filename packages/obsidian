@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("obsidian|Install Obsidian")
+
+install-obsidian() {
+    echo "Install Obsidian"
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        # wcurl "https://github.com/obsidianmd/obsidian-releases/releases/download/v$RELEASE/obsidian_${RELEASE}_amd64.deb"
+        wcurl "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.8.9/obsidian_1.8.9_amd64.deb"
+        sudo apt install -y "./obsidian_1.8.9_amd64.deb"
+        rm "obsidian_1.8.9_amd64.deb"
+    elif [[ "$PACKAGE_MANAGER" == "dnf" ]]; then
+        sudo flatpak install -y md.obsidian.Obsidian
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman  -S --noconfirm obsidian
+    fi
+}

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("uv|Install uv")
+
+install-uv() {
+    echo "Install uv"
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+}

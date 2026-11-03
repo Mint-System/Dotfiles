@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("openshift-cli|Install OpenShift cli")
+
+install-openshift-cli() {
+    echo "Install OpenShift cli"
+    wcurl "https://downloads-openshift-console.apps.exoscale-ch-gva-2-0.appuio.cloud/amd64/linux/oc.tar"
+    tar -xf oc.tar
+    rm oc.tar
+    mv oc "$HOME/.local/bin/oc"
+}

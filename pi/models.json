@@ -101,6 +101,22 @@
           // "maxTokens": 384000
         }
       ]
+    },
+    "mistral": {
+      "baseUrl": "https://api.mistral.ai",
+      "api": "mistral-conversations",
+      "apiKey": "$MISTRAL_API_KEY",
+      "models": [
+        {
+          "id": "codestral-latest"
+        },
+        {
+          "id": "glm-5-2"
+        },
+        {
+          "id": "deepseek-v4-1-flash-1017"
+        }
+      ]
     }
   }
 }

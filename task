@@ -96,6 +96,13 @@ copy-bin(){
     done
 }
 
+PACKAGE_ROWS=()
+for file in ./packages/*; do
+    if [[ -f "$file" ]]; then
+        source "$file"
+    fi
+done
+
 if [[ -d "$HOME/taskfile.build/bin" ]]; then
     for file in "$HOME/taskfile.build/bin/"*; do
         if [[ -f "$file" ]]; then
@@ -111,9 +118,7 @@ set-git-origin(){
 
 # Select the KeePass database once and store the selection in
 # KEEPASS_DATABASE_FILE / KEEPASS_DATABASE_KEY_FILE, then prompt for
-# the database password once. The stored selection is picked up by
-# get-pass-from-keepass, so the database is only selected once per
-# run no matter how many credentials are read.
+# the database password once.
 setup-keepass() {
     if [[ -z "${KEEPASS_DATABASE_FILE:-}" || ! -f "${KEEPASS_DATABASE_FILE:-}" ]]; then
         # Start from a clean slate so stale values don't leak in
@@ -164,26 +169,10 @@ list() {
         local max_cmd=4 max_opt=11
 
         rows+=("Name|Description")
-        rows+=("age|Install age")
-        rows+=("llm|Install llm")
-        rows+=("nextcloud|Install Nextcloud Desktop")
-        rows+=("exo|Install Exoscale cli")
-        rows+=("hcloud|Install Hetzner cli")
-        rows+=("uv|Install uv")
-        rows+=("helm|Install Helm")
-        rows+=("obsidian|Install Obsidian")
-        rows+=("opencode|Install OpenCode cli")
-        rows+=("openshift-cli|Install OpenShift cli")
-        rows+=("pnpm|Install pnpm")
-        rows+=("npm|Install npm")
-        rows+=("fzf|Install fzf")
-        rows+=("yq|Install yq")
-        rows+=("kubectl|Install kubectl")
-        rows+=("k9s|Install k9s")
-        rows+=("kind|Install kind")
-        rows+=("keepass|Install KeepassXC and keepassxc-cli")
-        rows+=("postgresql-client|Install Postgers client tools")
-        rows+=("sops|Install sops")
+        # Sorted copy of the rows registered by the package files
+        while IFS= read -r row; do
+            rows+=("$row")
+        done < <(printf '%s\n' "${PACKAGE_ROWS[@]}" | sort)
 
         for row in "${rows[@]}"; do
             IFS='|' read -r name desc <<< "$row"
@@ -226,247 +215,6 @@ uninstall() {
     if [[ -z "$1" ]]; then echo "\$1 is empty."; exit; fi
     local command="uninstall-$1"
     $command
-}
-
-install-yq() {
-    echo "Install yq"
-    sudo wget https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 -O /usr/bin/yq &&\
-    sudo chmod +x /usr/bin/yq
-}
-
-install-obsidian() {
-    echo "Install Obsidian"
-    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-        # wcurl "https://github.com/obsidianmd/obsidian-releases/releases/download/v$RELEASE/obsidian_${RELEASE}_amd64.deb"
-        wcurl "https://github.com/obsidianmd/obsidian-releases/releases/download/v1.8.9/obsidian_1.8.9_amd64.deb"
-        sudo apt install -y "./obsidian_1.8.9_amd64.deb"
-        rm "obsidian_1.8.9_amd64.deb"
-    elif [[ "$PACKAGE_MANAGER" == "dnf" ]]; then
-        sudo flatpak install -y md.obsidian.Obsidian
-    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
-        sudo pacman  -S --noconfirm obsidian
-    fi
-}
-
-install-exo() {
-    echo "Install exo"
-    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-        curl -fsSL https://raw.githubusercontent.com/exoscale/cli/master/install-latest.sh | sh
-    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
-        gpg --keyserver keys.openpgp.org --recv-key 7100E8BFD6199CE0374CB7F003686F8CDE378D41
-        git clone https://aur.archlinux.org/exoscale-cli-bin.git tmp/exoscale-cli-bin
-        cd tmp/exoscale-cli-bin
-        makepkg --install
-    fi
-}
-
-install-hcloud() {
-    echo "Install Hetzner cli"
-    curl -sSLO https://github.com/hetznercloud/cli/releases/latest/download/hcloud-linux-amd64.tar.gz
-    sudo tar -C /usr/local/bin --no-same-owner -xzf hcloud-linux-amd64.tar.gz hcloud
-    rm hcloud-linux-amd64.tar.gz
-}
-
-install-kubectl() {
-    echo "Install kubectl"
-    curl -LO "https://dl.k8s.io/release/v1.34.0/bin/linux/amd64/kubectl"
-    chmod +x kubectl
-    sudo mv kubectl /usr/local/bin/kubectl
-
-    echo "Install krew"
-    set -x; cd "$(mktemp -d)" &&
-    OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
-    ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
-    KREW="krew-${OS}_${ARCH}" &&
-    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
-    tar zxvf "${KREW}.tar.gz" &&
-    ./"${KREW}" install krew
-}
-
-install-age() {
-    echo "Install age."
-    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-        sudo apt install -y age
-    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
-        sudo pacman  -S --noconfirm age
-    fi
-}
-
-install-sops() {
-    echo "Install sops."
-    curl -LO https://github.com/getsops/sops/releases/download/v3.13.3/sops-v3.13.3.linux.amd64
-    sudo mv sops-v3.13.3.linux.amd64 /usr/local/bin/sops
-    sudo chmod +x /usr/local/bin/sops
-
-    echo "Install sops zsh plugin"
-    local zsh_custom="${ZSH_CUSTOM:-"$HOME/.oh-my-zsh/custom"}"
-    create-symlink "$PWD/zsh/plugins/sops" "$zsh_custom/plugins/sops"
-    echo "Add 'sops' to the plugins array in ~/.zshrc"
-}
-
-install-helm() {
-    echo  "Install Helm"
-    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
-        sudo apt install apt-transport-https --yes
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-        sudo apt update
-        sudo apt install -y  helm
-    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
-        sudo pacman -S --noconfirm helm
-    fi
-
-    echo "Install Helm sops plugin." 
-    curl -LO https://github.com/camptocamp/helm-sops/releases/download/20260618-1/helm-sops_20260618-1_linux_amd64.tar.gz
-    sudo tar -C /usr/local/bin --no-same-owner -xzf helm-sops_20260618-1_linux_amd64.tar.gz helm-sops
-    rm helm-sops_20260618-1_linux_amd64.tar.gz
-}
-
-install-keepass() {
-    echo "Install KeepassXC"
-    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-        sudo add-apt-repository ppa:phoerious/keepassxc
-        sudo apt update && sudo apt install -y keepassxc
-    elif [[ "$PACKAGE_MANAGER" == "dnf" ]]; then
-        sudo dnf install -y keepassxc
-    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
-        sudo pacman -S --noconfirm keepassxc
-    fi
-}
-
-install-postgresql-client() {
-    echo "Install Postgres client tools 16"
-    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-        sudo postgresql-client-16
-    fi
-}
-
-install-k9s() {
-    if [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
-        sudo pacman -S --noconfirm k9s
-    fi
-}
-
-install-kind() {
-    echo "Install kind"
-    # https://kind.sigs.k8s.io/docs/user/quick-start/#installation
-    [[ $(uname -m) = x86_64 ]] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-amd64
-    [[ $(uname -m) = aarch64 ]] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.29.0/kind-linux-arm64
-    chmod +x ./kind
-    sudo mv ./kind /usr/local/bin/kind
-}
-
-install-llm() {
-    echo "Install LLM"
-    uv tool install llm
-
-    echo "Create symlink to extra openapi models config"
-    create-symlink "$PWD/llm/extra-openai-models.yaml" "$(dirname $(llm logs path))/extra-openai-models.yaml"
-
-    echo "Set infomaniak api key"
-    setup-keepass
-    llm keys set infomaniak --value "$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$KEEPASS_DATABASE_PASSWORD")"
-
-    echo "Set default model"
-    llm models default Qwen/Qwen3-Embedding-8B
-}
-
-install-nextcloud() {
-    echo "Install Nextcloud Desktop"
-    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
-        sudo add-apt-repository ppa:xtradeb/apps
-        sudo apt update && sudo apt install -y nextcloud-desktop
-    elif [[ "$PACKAGE_MANAGER" == "dnf" ]]; then
-        sudo dnf install -y nextcloud-client
-    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
-        sudo pacman  -S --noconfirm nextcloud-client
-    fi
-}
-
-install-opencode() {
-    echo "Install OpenCode cli"
-    curl -fsSL https://opencode.ai/install | bash
-
-    echo "Setup opencode config"
-    setup-keepass
-    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$KEEPASS_DATABASE_PASSWORD")
-    mkdir -p "$HOME/.config/opencode"
-    envsubst '${INFOMANIAK_API_KEY}' < "./opencode/config.json" > "$HOME/.config/opencode/opencode.json"
-    echo "File '$HOME/.config/opencode/opencode.json' written"
-}
-
-install-openshift-cli() {
-    echo "Install OpenShift cli"
-    wcurl "https://downloads-openshift-console.apps.exoscale-ch-gva-2-0.appuio.cloud/amd64/linux/oc.tar"
-    tar -xf oc.tar
-    rm oc.tar
-    mv oc "$HOME/.local/bin/oc"
-}
-
-install-pnpm() {
-    echo "Install pnpm"
-    curl -fsSL https://get.pnpm.io/install.sh | sh -
-
-    log-warning "Run this command to install Node for your project:"
-    echo "pnpm env use --global lts"
-}
-
-uninstall-pnpm() {
-    echo "Uninstall pnpm"
-    
-    echo "This will delete: $PNPM_HOME"
-    read -p "Are you sure? (y/N) " confirm
-    
-    if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
-        rm -rf "$PNPM_HOME"
-        echo "pnpm uninstalled successfully"
-    else
-        echo "Aborted"
-    fi
-}
-
-install-npm() {
-    echo "Install Node.js"
-    if [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
-        sudo pacman -S --noconfirm nodejs-lts-krypton
-    fi
-    if [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
-        sudo pacman -S --noconfirm npm
-    fi
-}
-
-install-fzf() {
-    echo "Install fzf"
-    [[ ! -d "$HOME/.fzf" ]] &&  git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
-    yes | "$HOME/.fzf/install"
-}
-
-install-uv() {
-    echo "Install uv"
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-}
-
-install-pi() {
-    echo "Install pi cli"
-    curl -fsSL https://pi.dev/install.sh | sh
-
-    echo "Install pi extension"
-    pi install npm:@juicesharp/rpiv-todo
-
-    echo "Setup pi models"
-    setup-keepass
-    export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$KEEPASS_DATABASE_PASSWORD")
-    export HUGGINGFACE_ACCESS_TOKEN=$(get-pass-from-keepass "dotenv/huggingface_${USER}_access_token" "$KEEPASS_DATABASE_PASSWORD")
-    export SCALEWAY_API_KEY=$(get-pass-from-keepass "dotenv/scaleway_${USER}_api_key" "$KEEPASS_DATABASE_PASSWORD")
-    mkdir -p ~/.pi/agent
-    INFOMANIAK_API_KEY="${INFOMANIAK_API_KEY:-<empty>}"
-    HUGGINGFACE_ACCESS_TOKEN="${HUGGINGFACE_ACCESS_TOKEN:-<empty>}"
-    SCALEWAY_API_KEY="${SCALEWAY_API_KEY:-<empty>}"
-    envsubst '${INFOMANIAK_API_KEY}${HUGGINGFACE_ACCESS_TOKEN}${SCALEWAY_API_KEY}'  < ./pi/models.json > ~/.pi/agent/models.json
-    echo "Wrote ~/.pi/agent/models.json"
-
-    echo "Symlink pi settings"
-    create-symlink "$PWD/pi/settings.json" "$HOME/.pi/agent/settings.json"
 }
 
 clone-mint-system-repos() {

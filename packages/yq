@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("yq|Install yq")
+
+install-yq() {
+    echo "Install yq"
+    sudo wget https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 -O /usr/bin/yq &&\
+    sudo chmod +x /usr/bin/yq
+}
