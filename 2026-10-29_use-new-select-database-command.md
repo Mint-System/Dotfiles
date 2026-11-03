@@ -1,5 +1,5 @@
 ---
-commit_ref: b612b1ab58b72d9a78402b9a24b31bf29609c704
+commit_ref: d73d6b2b2fda92ef85bc24744152293b43fc5804
 title: "Use new select database command"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 action: implement
