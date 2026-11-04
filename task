@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-
+# Usage: https://taskfile.build/usage/
 set -e
 
-if [[ -a ".env" ]]; then
-    source .env
+if [[ -f ".env" ]]; then
+    # shellcheck source=/dev/null
+    source ".env"
 fi
 
 help-table() {
@@ -48,9 +49,11 @@ help-table() {
 }
 
 help() {
+    local grep_pattern
     echo
     if [[ -n "$1" ]]; then
-        help-table | grep -i "$1" | column -t -s'|'
+        grep_pattern="$1"
+        help-table | grep -i "$grep_pattern" | column -t -s'|'
     else
         echo "task <command> [options]"
         echo
@@ -266,12 +269,16 @@ if [[ "$1" == *","* ]]; then
             "$cmd"
         else
             echo "Unknown command: $cmd"
-            help
+            help "$@"
             exit 1
         fi
     done
 elif declare -f "$1" > /dev/null; then
-    "$1" "${@:2}"
+    if [[ "${2:-}" == "tfhelp" ]]; then
+        help "$1"
+    else
+        "$1" "${@:2}"
+    fi
 else
     case "$1" in
         *)
