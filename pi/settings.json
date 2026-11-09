@@ -12,5 +12,8 @@
   ],
   "compaction": {
     "enabled": false
+  },
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-context-view\",\"scope\":\"user\"}": "0.8.3"
   }
 }
