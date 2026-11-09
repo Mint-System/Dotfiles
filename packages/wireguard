@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("wireguard|Install WireGuard")
+
+install-wireguard() {
+    echo "Install WireGuard"
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        ssudo apt install -y wireguard
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        sudo pacman -S --noconfirm wireguard-tools
+    fi
+}
