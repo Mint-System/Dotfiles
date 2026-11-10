@@ -12,7 +12,7 @@ install-llm() {
     echo "Setup api keys"
     setup-keepass
     llm keys set infomaniak --value "$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$KEEPASS_DATABASE_PASSWORD")"
-    llm keys set mistral --value "$(get-pass-from-keepass "dotenv/mistral_api_key_${USER}" "$KEEPASS_DATABASE_PASSWORD")"
+    llm keys set mistral --value "$(get-pass-from-keepass "dotenv/mistral_api_key" "$KEEPASS_DATABASE_PASSWORD")"
 
     echo "Set default model"
     llm models default Qwen/Qwen3-Embedding-8B
