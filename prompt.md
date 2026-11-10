@@ -1,16 +1,17 @@
 ---
-title: "Setup packages folder"
+title: "Setup gondolin"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 action: implement
-state: completed
-date_completed: 2026-11-03
-harness: pi 1.5.0
-model: deepseek-v4-1-flash-1017 (mistral)
-input_tokens: 25052
-output_tokens: 8241
+state: draft
+date_completed: YYYY-MM-DD
+harness:
+provider:
+model:
+input_tokens:
+output_tokens:
 ---
 
-# Setup packages folder
+# Setup gondolin
 
 Note: @Clanker refers to the "ai agent" (you) who is working on this prompt file.
 
@@ -22,22 +23,14 @@ Note: @Clanker refers to the "ai agent" (you) who is working on this prompt file
 
 ## Task
 
-In the task file are `install-*` functions for different packages. Instead of having all functions in this file I want have one package file in the `packages` folder.
+Create a `packages/gondolin` that installs https://github.com/earendil-works/gondolin
 
-I prepared an example `packages/pnpm`. Apply this pattern for all other packages.
-
-Then in the `task` file source the `packages/*` folders.
-
-While you are at it, sort the list of packages from the `list` command. 
+Also setup the Pi extension https://github.com/earendil-works/gondolin
 
 @Clanker When task is completed set frontmatter state to review. Prompt the author to verify the results.
 
 ## Worklog
 
-- Moved all `install-*` functions out of the `task` file into one file per package in `packages/` (age, exo, fzf, hcloud, helm, k9s, keepass, kind, kubectl, llm, nextcloud, npm, obsidian, opencode, openshift-cli, pi, pnpm, postgresql-client, sops, uv, yq), following the `packages/pnpm` pattern (shebang, one file per package, function body unchanged).
-- `task` now sources every file in `packages/*` before the `taskfile.build` bin imports, so helper functions (`create-symlink`, `log-warning`, `setup-keepass`) and `PACKAGE_MANAGER` remain available to the package files.
-- Each package file registers its own `list` row via `PACKAGE_ROWS+=("<name>|<description>")`, so adding a package file is enough to make it appear in `./task list`. The `list` command sorts the registered rows alphabetically at runtime; the hardcoded row list was removed from `task`.
-- Side effect: `pi` was missing from the old hardcoded table and is now listed.
-- Verified with `bash -n` on `task` and all package files, `./task list`, `./task help`, and a dispatch check that all 21 `install-<name>` functions resolve after sourcing.
+@Clanker Add a summary here once the task has been completed.
 
-@Clanker If author confirms results set frontmatter state to completed, otherwise to aborted. Update date, harness and model. If you have access to session info also add token count.
+@Clanker If author confirms results set frontmatter state to completed, otherwise to aborted. Update date, harness, provider and model. If you have access to session info also add token count.
