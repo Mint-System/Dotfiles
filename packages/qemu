@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("qemu|Install QEMU (headless) for Gondolin micro-VMs")
+
+install-qemu() {
+    echo "Install QEMU"
+    if [[ "$PACKAGE_MANAGER" == "apt" ]]; then
+        sudo apt install -y qemu-system-x86 qemu-utils
+    elif [[ "$PACKAGE_MANAGER" == "pacman" ]]; then
+        # qemu-base provides qemu-system-x86_64 and qemu-img without the GUI stack
+        sudo pacman -S --noconfirm --needed qemu-base
+    fi
+
+    if ! command -v qemu-img >/dev/null 2>&1 || ! command -v qemu-system-x86_64 >/dev/null 2>&1; then
+        log-warning "qemu-img or qemu-system-x86_64 not found. Gondolin micro-VMs will not start."
+        return 1
+    fi
+
+    echo "QEMU installed: $(qemu-system-x86_64 --version | head -1)"
+}

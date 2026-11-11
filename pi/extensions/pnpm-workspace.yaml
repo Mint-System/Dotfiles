@@ -1,0 +1,4 @@
+allowBuilds:
+  cpu-features: true
+  # Optional native crypto binding of ssh2, does not build with current Node.js
+  ssh2: false

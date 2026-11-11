@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Added `AGENTS.md` to define universal rules and expectations for LLM agents working within the repository, including safety, planning, context, sparsity, environment/tooling, and detailed Bash coding conventions.
 - Added support for the `cortecs` LLM model in `llm/extra-openai-models.yaml` and configured API key setup in the `install-llm` task.
 - Added `prompts/01_add-cortects-to-llm-models.md` to document the task of integrating the cortecs model.
+- Added `packages/gondolin` to install the [Gondolin](https://github.com/earendil-works/gondolin) CLI and its Pi extension (`pi/extensions/gondolin.ts`).
+- Added `packages/qemu` to install QEMU (headless), the default backend required by Gondolin micro-VMs.
 
 ### Changed
 - Updated license from GNU General Public License v3 to GNU Affero General Public License v3 to ensure source code availability for network server software.

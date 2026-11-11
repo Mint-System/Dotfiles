@@ -10,10 +10,13 @@
     "npm:@juicesharp/rpiv-todo",
     "npm:pi-context-view"
   ],
+  "extensions": [
+    "~/.pi/agent/extensions/gondolin.ts"
+  ],
   "compaction": {
     "enabled": false
   },
   "extensionChangelogVersions": {
-    "{\"source\":\"npm:pi-context-view\",\"scope\":\"user\"}": "0.8.3"
+    "{\"source\":\"npm:pi-context-view\",\"scope\":\"user\"}": "0.8.4"
   }
 }

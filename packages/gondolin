@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+PACKAGE_ROWS+=("gondolin|Install Gondolin micro-VM sandbox")
+
+install-gondolin() {
+    echo "Install Gondolin cli"
+    pnpm add -g --ignore-scripts @earendil-works/gondolin
+
+    echo "Install Gondolin dependencies for the Pi extension"
+    pnpm install --prefix "$PWD/pi/extensions"
+
+    echo "Symlink Pi extension"
+    create-symlink "$PWD/pi/extensions/gondolin.ts" "$HOME/.pi/agent/extensions/gondolin.ts"
+
+    # QEMU is the default backend and required for the rootfs overlay
+    if ! command -v qemu-img >/dev/null 2>&1 || ! command -v qemu-system-x86_64 >/dev/null 2>&1; then
+        log-warning "QEMU is not installed. Run './task install qemu', otherwise Gondolin micro-VMs fail with 'spawnSync qemu-img ENOENT'."
+    fi
+}
+
+uninstall-gondolin() {
+    echo "Uninstall Gondolin"
+    pnpm remove -g @earendil-works/gondolin
+
+    echo "Remove Pi extension symlink"
+    rm -f "$HOME/.pi/agent/extensions/gondolin.ts"
+
+    echo "Remove Pi extension dependencies"
+    rm -rf "$PWD/pi/extensions/node_modules"
+}
