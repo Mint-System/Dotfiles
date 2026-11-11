@@ -22,7 +22,8 @@
  *     must be installed in `pi/extensions/node_modules`
  */
 
-import { constants as fsConstants } from "node:fs";
+import { constants as fsConstants, existsSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 
 import type {
@@ -40,9 +41,52 @@ import {
   type WriteOperations,
 } from "@earendil-works/pi-coding-agent";
 
-import { RealFSProvider, VM } from "@earendil-works/gondolin";
+import { ReadonlyProvider, RealFSProvider, VM } from "@earendil-works/gondolin";
 
 const GUEST_WORKSPACE = "/workspace";
+const GUEST_SESSIONS = "/sessions";
+
+// Pi scrubs the session vars from `process.env`; they only exist on `ctx`.
+// Read them there, exactly like Pi's own bash tool does.
+function guestEnv(
+  ctx: ExtensionContext | undefined,
+  sessionDir: string | null,
+): Record<string, string> {
+  const env: Record<string, string> = {};
+  const sessionFile = ctx?.sessionManager?.getSessionFile?.();
+  if (sessionFile) env.PI_SESSION_FILE = sessionFile;
+  const sessionId = ctx?.sessionManager?.getSessionId?.();
+  if (sessionId) env.PI_SESSION_ID = sessionId;
+  if (ctx?.model) {
+    env.PI_MODEL = ctx.model.id;
+    env.PI_PROVIDER = ctx.model.provider;
+  }
+  if (ctx?.thinkingLevel) env.PI_REASONING_LEVEL = ctx.thinkingLevel;
+  for (const key of ["PI_CODING_AGENT", "AI_AGENT"] as const) {
+    const value = process.env[key];
+    if (value) env[key] = value;
+  }
+  // Rewrite the session path into the read-only guest mount
+  if (sessionDir && env.PI_SESSION_FILE) {
+    const rel = path.relative(sessionDir, env.PI_SESSION_FILE);
+    if (rel && !rel.startsWith("..") && !path.isAbsolute(rel)) {
+      env.PI_SESSION_FILE = path.posix.join(
+        GUEST_SESSIONS,
+        rel.split(path.sep).join(path.posix.sep),
+      );
+    } else {
+      delete env.PI_SESSION_FILE;
+    }
+  }
+  return env;
+}
+
+function resolveSessionDir(): string | null {
+  const agentDir = process.env.PI_CODING_AGENT_DIR;
+  const base = agentDir ?? path.join(os.homedir(), ".pi", "agent");
+  const dir = path.join(base, "sessions");
+  return existsSync(dir) ? dir : null;
+}
 
 function shQuote(value: string): string {
   // POSIX shell quoting: wraps in single quotes and escapes internal quotes
@@ -113,11 +157,16 @@ function createGondolinEditOps(vm: VM, localCwd: string): EditOperations {
   return { readFile: r.readFile, access: r.access, writeFile: w.writeFile };
 }
 
-function createGondolinBashOps(vm: VM, localCwd: string): BashOperations {
+function createGondolinBashOps(
+  vm: VM,
+  localCwd: string,
+  env: Record<string, string>,
+): BashOperations {
   return {
     // The host environment passed by pi is intentionally not forwarded: it
-    // usually contains API keys and other credentials.  Configure secrets for
-    // the guest with `httpHooks` (see docs/secrets.md) instead.
+    // usually contains API keys and other credentials.  Only the non-secret
+    // Pi session metadata in `env` is passed.  Configure secrets for the guest
+    // with `httpHooks` (see docs/secrets.md) instead.
     exec: async (command, cwd, { onData, signal, timeout }) => {
       const guestCwd = toGuestPath(localCwd, cwd);
 
@@ -138,6 +187,7 @@ function createGondolinBashOps(vm: VM, localCwd: string): BashOperations {
         // `/bin/bash -lc` for a familiar environment (pipelines, expansions, etc.)
         const proc = vm.exec(["/bin/bash", "-lc", command], {
           cwd: guestCwd,
+          env,
           signal: ac.signal,
           stdout: "pipe",
           stderr: "pipe",
@@ -163,6 +213,7 @@ function createGondolinBashOps(vm: VM, localCwd: string): BashOperations {
 
 export default function (pi: ExtensionAPI) {
   const localCwd = process.cwd();
+  const sessionDir = resolveSessionDir();
 
   const localRead = createReadTool(localCwd);
   const localWrite = createWriteTool(localCwd);
@@ -189,6 +240,14 @@ export default function (pi: ExtensionAPI) {
         vfs: {
           mounts: {
             [GUEST_WORKSPACE]: new RealFSProvider(localCwd),
+            // Read-only so the guest can read its session log but not alter it
+            ...(sessionDir
+              ? {
+                  [GUEST_SESSIONS]: new ReadonlyProvider(
+                    new RealFSProvider(sessionDir),
+                  ),
+                }
+              : {}),
           },
         },
       });
@@ -268,16 +327,22 @@ export default function (pi: ExtensionAPI) {
     async execute(id, params, signal, onUpdate, ctx) {
       const activeVm = await ensureVm(ctx);
       const tool = createBashTool(localCwd, {
-        operations: createGondolinBashOps(activeVm, localCwd),
+        operations: createGondolinBashOps(
+          activeVm,
+          localCwd,
+          guestEnv(ctx, sessionDir),
+        ),
       });
       return tool.execute(id, params, signal, onUpdate);
     },
   });
 
   // Run user `!` commands inside the VM too
-  pi.on("user_bash", (_event, _ctx) => {
+  pi.on("user_bash", (event, ctx) => {
     if (!vm) return;
-    return { operations: createGondolinBashOps(vm, localCwd) };
+    return {
+      operations: createGondolinBashOps(vm, localCwd, guestEnv(ctx, sessionDir)),
+    };
   });
 
   // Replace the CWD line in the system prompt so the model sees /workspace

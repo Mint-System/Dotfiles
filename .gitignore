@@ -1,3 +1,10 @@
+# Taskfile
 tmp
+prompt.md
 .env
+
+# pnpm
 node_modules
+pnpm-workspace.yaml
+
+# Project

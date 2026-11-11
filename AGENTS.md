@@ -2,7 +2,7 @@
 
 Note: @Clanker refers to the "ai agent" (you) who is working on this task.
 
-## General agent guidance
+## General
 
 This section outlines the universal rules and expectations for any LLM agent working within this repository.
 
@@ -16,47 +16,23 @@ This section outlines the universal rules and expectations for any LLM agent wor
 
 **Never Commit:** Do not run `git commit`, `git push`, or any other version control write operation. Only the author is allowed to commit changes. You may stage files, run diffs, and prepare commit messages, but the actual commit and push must be done by the author.
 
-## Project structure
+## Project
 
 @Clanker document the structure of this project in this section.
 
-## Environment & tooling
+## Environment
 
+### Taskfile
 
-### Temporary files
+This project uses the <https://taskfile.build/> standard.
 
-When creating temporary files and scripts, use the `./tmp` directory.
+The `./task` file is a bash script that provides all functions necessary to work with this project.
 
-### Session Info (Pi harness)
+Always try to run a command with the `./task` file script.
 
-Inside the **Pi** harness, session details are exposed as environment variables:
+### New packages
 
-- `PI_MODEL` – model ID, e.g. `deepseek-v4-1-flash-1017`
-- `PI_PROVIDER` – provider, e.g. `mistral`
-- `PI_REASONING_LEVEL` – e.g. `off`
-- `PI_SESSION_ID` – e.g. `01a1a57c-a4b1-777f-ac7b-6b912be9400a`
-- `PI_SESSION_FILE` – path to the session log, e.g. `/home/janikvonrotz/.pi/agent/sessions/--home-janikvonrotz-Odoo-Build--/2026-11-04T07-36-11-698Z_01a1a57c-a4b1-777f-ac7b-6b912be9400a.jsonl`
-- `AI_AGENT` – e.g. `Pi`
-- `PI_CODING_AGENT` – e.g. `true`
-
-The session log at `$PI_SESSION_FILE` is a JSONL file. Each assistant message carries token usage in `message.usage` (`input` and `output`). When completing a prompt file, extract the model and cumulative token counts from these sources:
-
-```bash
-jq -s '[.[] | select(.type == "message" and .message.usage) | .message.usage]
-  | {input: (map(.input) | add // 0), output: (map(.output) | add // 0)}' "$PI_SESSION_FILE"
-```
-
-This prints the totals, e.g. `{"input": 19876, "output": 1064}`.
-
-### Encrypted secrets
-
-All required env vars are stored in `secrets.env`. You can load the env vars like this:
-
-```bash
-eval "$(task show-dotenv secrets)"
-```
-
-Set `SOPS_AGE_KEY_FILE=/home/$USER/.config/sops/age/keys.txt` to decrypt.
+Do not automatically install new software packages. Always ask for permission.
 
 ### Prompt WIP
 
@@ -70,23 +46,38 @@ When the author tells you to stop (e.g. "stop" or "continue later"), preserve yo
 
 When you resume work on a `wip` prompt, read the `## WIP` section and continue from there.
 
-### New packages
+### Session Info (Pi harness)
 
-Do not automatically install new software packages. Always ask for permission.
+Inside the **Pi** harness, session details are exposed as environment variables:
 
-### Taskfile
+- `PI_MODEL` – model ID, e.g. `deepseek-v4-1-flash-1017`
+- `PI_PROVIDER` – provider, e.g. `mistral`
+- `PI_REASONING_LEVEL` – e.g. `off`
+- `PI_SESSION_ID` – e.g. `01a1a57c-a4b1-777f-ac7b-6b912be9400a`
+- `PI_SESSION_FILE` – path to the session log, e.g. `$HOME/.pi/agent/sessions/*/2026-11-04T07-36-11-698Z_01a1a57c-a4b1-777f-ac7b-6b912be9400a.jsonl`
+- `AI_AGENT` – e.g. `Pi`
+- `PI_CODING_AGENT` – e.g. `true`
 
-This project uses the <https://taskfile.build/> standard.
+The session log at `$PI_SESSION_FILE` is a JSONL file. Each assistant message carries token usage in `message.usage` (`input` and `output`). When completing a prompt file, extract the model and cumulative token counts from these sources:
 
-The `./task` file is a bash script that provides all functions necessary to work with this project.
+```bash
+jq -s '[.[] | select(.type == "message" and .message.usage) | .message.usage]
+  | {input: (map(.input) | add // 0), output: (map(.output) | add // 0)}' "$PI_SESSION_FILE"
+```
 
-Always try to run a command with the `./task` file script.
+This prints the totals, e.g. `{"input": 19876, "output": 1064}`.
 
-## Coding conventions
+If `jq` is unavailable (e.g. inside a Gondolin micro-VM), use `node`:
 
+```bash
+node -e 'const l=require("fs").readFileSync(process.env.PI_SESSION_FILE,"utf8").split("\n").filter(Boolean);let i=0,o=0;for(const x of l){const m=JSON.parse(x);if(m.type==="message"&&m.message?.usage){i+=m.message.usage.input||0;o+=m.message.usage.output||0}}console.log(JSON.stringify({input:i,output:o}))'
+```
 
-### General
+### Temporary files
 
-**Avoid try catch:** Prefer default values and params over try catch statements.
+When creating temporary files and scripts, use the `./tmp` directory.
 
-**Expect baseline:** Do not check every edge case. Think within the baseline of the project. 
+## Conventions
+
+@Clanker document project specific coding conventions in this section.
+

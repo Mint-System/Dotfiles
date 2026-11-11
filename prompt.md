@@ -2,13 +2,12 @@
 title: "Setup gondolin"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 action: implement
-state: completed
-date_completed: 2026-11-11
+state: review
 harness: Pi
 provider: mistral
 model: deepseek-v4-1-flash-1017
-input_tokens: 438809
-output_tokens: 13795
+input_tokens: 473085
+output_tokens: 16080
 ---
 
 # Setup gondolin
@@ -58,3 +57,21 @@ Also setup the Pi extension https://github.com/earendil-works/gondolin
 - `rootfs: { mode: "readonly" }` avoids `qemu-img` but makes the guest root filesystem immutable, so it is not suitable for the extension.
 
 @Clanker If author confirms results set frontmatter state to completed, otherwise to aborted. Update date, harness, provider and model. If you have access to session info also add token count.
+
+
+### Session env in the guest (was WIP)
+
+Agents running inside the VM saw `PI_MODEL` and `PI_SESSION_FILE` empty, so they could not read their own session log for token counts. `/sessions` was mounted correctly all along.
+
+Root cause: Pi **scrubs** `PI_SESSION_ID`, `PI_SESSION_FILE`, `PI_PROVIDER`, `PI_MODEL` and `PI_REASONING_LEVEL` from `process.env` and re-injects them only into its own bash tool env. The extension's custom `BashOperations` bypassed that path. `PI_CODING_AGENT` worked because it is never scrubbed.
+
+Fix: `pi/extensions/gondolin.ts` now reads the values from `ctx` (`sessionManager.getSessionFile()`, `getSessionId()`, `model`, `thinkingLevel`) — the same source Pi's own bash tool uses — and rewrites the host session path into the `/sessions` mount. `/sessions` is mounted read-only via `ReadonlyProvider`, as a folder so it survives new sessions and `/resume`.
+
+Rejected approaches (do not repeat): reading `process.env` at extension load time (always empty), and a `spawnHook` returning an `export ...` prefix (the hook `env` is ignored by custom `operations`).
+
+Verified end-to-end: this session runs inside the micro-VM (`uname` reports `6.18.58-0-virt`, `/workspace` and `/sessions` are `sandboxfs` FUSE mounts) and the guest reports `PI_SESSION_FILE=/sessions/--home-janikvonrotz-mint-system-dotfiles--/2026-11-11T14-34-00-639Z_01a1cb07-....jsonl`, `PI_MODEL=deepseek-v4-1-flash-1017`, `PI_PROVIDER=mistral`, `PI_REASONING_LEVEL=off`. The token recipe in `AGENTS.md` runs against that path.
+
+### Open follow-ups (host side)
+
+- `~/taskfile.build/templates/AGENTS.md.session-info` gained a `node` fallback for the token recipe (the guest has no `jq`); `AGENTS.md` in this repo carries the same paragraph. 12 other repos still have the older prose-only session-info section and 4 have the `jq`-only recipe; re-render them with `./task template-project-agents` (interactive `fzf`, verify no section is dropped).
+- These extension edits were made from inside the VM at `/workspace`; confirm `git diff pi/extensions/gondolin.ts` on the host.
