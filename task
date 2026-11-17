@@ -19,6 +19,7 @@ help-table() {
     rows+=("uninstall|[name]|Uninstall a package.")
     rows+=("list|[grep]|List all available packages")
     rows+=("list-infomaniak-models||List all available Infomaniak ai models")
+    rows+=("list-mistral-models||List all available Mistral ai models")
     rows+=("set-git-origin||Change git origin to ssh")
     rows+=("setup-passwordless-sudo||Get sudoers entry for passwordless sudo")
 
@@ -164,6 +165,15 @@ list-infomaniak-models() {
          -H "Authorization: Bearer $INFOMANIAK_API_KEY" \
          -H "Content-Type: application/json" \
         "https://api.infomaniak.com/2/ai/$PRODUCT_ID/openai/v1/models" | jq '.data[].id'
+}
+
+list-mistral-models() {
+    setup-keepass
+    MISTRAL_API_KEY=$(get-pass-from-keepass "dotenv/mistral_api_key_${USER}" "$KEEPASS_DATABASE_PASSWORD")
+    curl -sS \
+         -H "Authorization: Bearer $MISTRAL_API_KEY" \
+         -H "Accept: application/json" \
+        "https://api.mistral.ai/v1/models" | jq -r '.data[].id'
 }
 
 list() {

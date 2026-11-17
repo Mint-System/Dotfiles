@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Added `packages/gondolin` to install the [Gondolin](https://github.com/earendil-works/gondolin) CLI and its Pi extension (`pi/extensions/gondolin.ts`).
 - Added `packages/qemu` to install QEMU (headless), the default backend required by Gondolin micro-VMs.
 - Added the Pi session directory as a read-only mount (`/sessions`) to the Gondolin Pi extension and forwarded the non-secret `PI_*` session variables, so agents running in the sandbox can read their own session log.
+- Added `list-mistral-models` command to `./task` to list all available Mistral AI models using the API key from KeePass.
+- Added the `mistral-code-latest` model to the `mistral` provider in `pi/models.json` and to `llm/extra-openai-models.yaml`.
 
 ### Changed
 - Updated license from GNU General Public License v3 to GNU Affero General Public License v3 to ensure source code availability for network server software.

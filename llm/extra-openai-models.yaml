@@ -10,3 +10,7 @@
   model_name: codestral-latest
   api_base: https://api.mistral.ai/v1
   api_key_name: mistral
+- model_id: mistral-code-latest
+  model_name: mistral-code-latest
+  api_base: https://api.mistral.ai/v1
+  api_key_name: mistral
