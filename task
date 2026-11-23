@@ -169,7 +169,7 @@ list-infomaniak-models() {
 
 list-mistral-models() {
     setup-keepass
-    MISTRAL_API_KEY=$(get-pass-from-keepass "dotenv/mistral_api_key_${USER}" "$KEEPASS_DATABASE_PASSWORD")
+    MISTRAL_API_KEY=$(get-pass-from-keepass "dotenv/mistral_api_key" "$KEEPASS_DATABASE_PASSWORD")
     curl -sS \
          -H "Authorization: Bearer $MISTRAL_API_KEY" \
          -H "Accept: application/json" \

@@ -13,9 +13,9 @@ install-pi() {
     echo "Setup pi models"
     setup-keepass
     export INFOMANIAK_API_KEY=$(get-pass-from-keepass dotenv/infomaniak_ai_service_api_key "$KEEPASS_DATABASE_PASSWORD")
+    export MISTRAL_API_KEY=$(get-pass-from-keepass "dotenv/mistral_api_key" "$KEEPASS_DATABASE_PASSWORD")
     export HUGGINGFACE_ACCESS_TOKEN=$(get-pass-from-keepass "dotenv/huggingface_access_token_${USER}" "$KEEPASS_DATABASE_PASSWORD")
     export SCALEWAY_API_KEY=$(get-pass-from-keepass "dotenv/scaleway_api_key_${USER}" "$KEEPASS_DATABASE_PASSWORD")
-    export MISTRAL_API_KEY=$(get-pass-from-keepass "dotenv/mistral_api_key_${USER}" "$KEEPASS_DATABASE_PASSWORD")
     mkdir -p ~/.pi/agent
     INFOMANIAK_API_KEY="${INFOMANIAK_API_KEY:-<empty>}"
     HUGGINGFACE_ACCESS_TOKEN="${HUGGINGFACE_ACCESS_TOKEN:-<empty>}"
