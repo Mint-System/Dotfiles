@@ -1,5 +1,5 @@
 ---
-commit_ref: a2b3d6708357c39a8f3f17cb8ce21df9c61e9eab
+commit_ref: 573dfb1b56de1f1a1499a4fa7c652b120851f002
 title: "Add command to list mistral models"
 author: "Janik von Rotz <login@janikvonrotz.ch>"
 session_id: 01a1e969-d964-77dd-be08-fdddcba2b3c1
