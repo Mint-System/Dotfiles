@@ -27,3 +27,20 @@ install-pi() {
     echo "Symlink pi settings"
     create-symlink "$PWD/pi/settings.json" "$HOME/.pi/agent/settings.json"
 }
+
+uninstall-pi() {
+    echo "Uninstall Pi cli"
+    pnpm remove -g @earendil-works/pi-coding-agent
+
+    echo "Uninstall Pi extensions"
+    pi uninstall npm:@juicesharp/rpiv-todo 2>/dev/null || true
+    pi uninstall npm:pi-context-view 2>/dev/null || true
+
+    echo "Remove Pi settings symlink"
+    if [[ -L "$HOME/.pi/agent/settings.json" ]]; then
+        rm -f "$HOME/.pi/agent/settings.json"
+    fi
+
+    echo "Remove generated Pi models"
+    rm -f "$HOME/.pi/agent/models.json"
+}

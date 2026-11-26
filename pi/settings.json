@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.6.0",
+  "lastChangelogVersion": "1.6.1",
   "theme": "dark",
   "defaultProvider": "mistral",
   "defaultModel": "deepseek-v4-1-flash-1017",
@@ -9,9 +9,6 @@
   "packages": [
     "npm:@juicesharp/rpiv-todo",
     "npm:pi-context-view"
-  ],
-  "extensions": [
-    "~/.pi/agent/extensions/gondolin.ts"
   ],
   "compaction": {
     "enabled": false

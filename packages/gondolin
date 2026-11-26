@@ -27,4 +27,20 @@ uninstall-gondolin() {
 
     echo "Remove Pi extension dependencies"
     rm -rf "$PWD/pi/extensions/node_modules"
+
+    echo "Remove Pi extension from settings"
+    remove-pi-extension "extensions/gondolin.ts"
+}
+
+remove-pi-extension() {
+    local settings_file="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}/settings.json"
+    [[ -f "$settings_file" ]] || return 0
+
+    # shellcheck disable=SC2016
+    node -e '
+        const fs = require("fs"), [file, name] = process.argv.slice(1)
+        const s = JSON.parse(fs.readFileSync(file, "utf8"))
+        s.extensions = (s.extensions ?? []).filter((e) => !e.endsWith(name))
+        fs.writeFileSync(file, `${JSON.stringify(s, null, 2)}\n`)
+    ' "$settings_file" "$1"
 }
